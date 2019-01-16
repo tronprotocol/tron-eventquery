@@ -1,6 +1,6 @@
-# TronEvent
+# TronEventQuery
 
-TronEvent is implemented with tron's new event subscribe model. It uses same query interface with Tron-Grid.Users can 
+TronEventQuery is implemented with tron's new event subscribe model. It uses same query interface with Tron-Grid.Users can 
 also subscribe block trigger, transaction trigger, contract log trigger and contract event trigger. TronEvent is 
 independent of particular branch of java-tron, the new event subscribe model will be released on version 3.5 of java-tron.
 
@@ -15,5 +15,5 @@ mvn package
 ## Run
 ```
 cd target
-nohup java -jar trongrid-0.0.1-SNAPSHOT.jar &
+nohup java -jar troneventquery-1.0.1-SNAPSHOT.jar &
 ```
