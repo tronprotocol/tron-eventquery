@@ -15,5 +15,5 @@ mvn package
 ## Run
 ```
 cd target
-nohup java -jar troneventquery-1.0.1-SNAPSHOT.jar &
+nohup java -jar troneventquery-1.0.0-SNAPSHOT.jar &
 ```
