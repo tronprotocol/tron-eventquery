@@ -18,10 +18,10 @@ cd target
 nohup java -jar troneventquery-1.0.0-SNAPSHOT.jar &
 ```
 
-## What is the main Http service?
+## What is the main HTTP service?
 baseUrl: https://test.tronex.io  
  
-### Main Service  
+### Main HTTP Service  
 Function: get transaction list
 ```
 subpath: $baseUrl/totaltransactions
