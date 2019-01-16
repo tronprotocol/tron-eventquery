@@ -30,28 +30,28 @@ public class TransactionController {
     return number;
   }
 
-//  @RequestMapping(method = RequestMethod.GET, value = "/transactions")
-//  public JSONObject getTranssactions(
-//      /******************* Page Parameters ****************************************************/
-//      @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
-//      @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
-//      @RequestParam(value = "start", required = false, defaultValue = "0") int start,
-//      @RequestParam(value = "total", required = false, defaultValue = "0") Long total,
-//      /****************** Filter parameters *****************************************************/
-//      @RequestParam(value = "block", required = false, defaultValue = "-1") long block
-//  ) {
-//    QueryFactory query = new QueryFactory();
-//    if (block > 0) {
-//      query.setBlockNumGte(block);
-//    }
-//    query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
-//    List<TransactionTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
-//        TransactionTriggerEntity.class);
-//    Map map = new HashMap();
-//    map.put("total", queryResult.size());
-//    map.put("data", queryResult);
-//    return new JSONObject(map);
-//  }
+  @RequestMapping(method = RequestMethod.GET, value = "/transactions")
+  public JSONObject getTranssactions(
+      /******************* Page Parameters ****************************************************/
+      @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
+      @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
+      @RequestParam(value = "start", required = false, defaultValue = "0") int start,
+      @RequestParam(value = "total", required = false, defaultValue = "0") Long total,
+      /****************** Filter parameters *****************************************************/
+      @RequestParam(value = "block", required = false, defaultValue = "-1") long block
+  ) {
+    QueryFactory query = new QueryFactory();
+    if (block > 0) {
+      query.setBlockNumGte(block);
+    }
+    query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
+    List<TransactionTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
+        TransactionTriggerEntity.class);
+    Map map = new HashMap();
+    map.put("total", queryResult.size());
+    map.put("data", queryResult);
+    return new JSONObject(map);
+  }
 
   @RequestMapping(method = RequestMethod.GET, value = "/transactions/{hash}")
   public JSONObject getTransactionbyHash(
