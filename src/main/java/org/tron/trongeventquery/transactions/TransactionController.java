@@ -18,7 +18,8 @@ import org.tron.trongeventquery.TransactionTriggerEntity;
 
 @RestController
 @Component
-@PropertySource(value = {"file:./config.conf"}, encoding="utf-8")
+@PropertySource(value = {"file:./config.conf"}, ignoreResourceNotFound = true)
+@PropertySource(value = {"file:../config.conf"}, ignoreResourceNotFound = true)
 public class TransactionController {
   @Autowired(required = false)
   MongoTemplate mongoTemplate;
