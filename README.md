@@ -14,7 +14,7 @@ mvn package
 
 ## Run
 ```
-nohup java -jar target/troneventquery-1.0.0-SNAPSHOT.jar &
+./deploy.sh
 ```
 
 ## What is the main HTTP service?
