@@ -142,12 +142,12 @@ contract: contract address, default is ""
 Example: https://test.tronex.io/event/timestamp?since=1544483426749&limit=1&start=1
 ```
 ## Change config
-change username, passwork or other information in config.conf
-mongo.host=47.90.245.68
-mongo.port=27017
-mongo.dbname=eventlog
-mongo.username=tron
-mongo.password=123456
+change username, passwork or other information in config.conf   
+mongo.host=47.90.245.68   
+mongo.port=27017   
+mongo.dbname=eventlog   
+mongo.username=tron   
+mongo.password=123456   
 
-mongo.connectionsPerHost=8
-mongo.threadsAllowedToBlockForConnectionMultiplier=4
+mongo.connectionsPerHost=8   
+mongo.threadsAllowedToBlockForConnectionMultiplier=4   
