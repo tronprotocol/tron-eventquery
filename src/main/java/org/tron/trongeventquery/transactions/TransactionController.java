@@ -18,7 +18,7 @@ import org.tron.trongeventquery.TransactionTriggerEntity;
 
 @RestController
 @Component
-@PropertySource("classpath:tronscan.properties")
+@PropertySource(value = {"file:./config.conf"}, encoding="utf-8")
 public class TransactionController {
   @Autowired(required = false)
   MongoTemplate mongoTemplate;
@@ -36,7 +36,6 @@ public class TransactionController {
       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
-      @RequestParam(value = "total", required = false, defaultValue = "0") Long total,
       /****************** Filter parameters *****************************************************/
       @RequestParam(value = "block", required = false, defaultValue = "-1") long block
   ) {
