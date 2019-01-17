@@ -14,7 +14,9 @@ mvn package
 
 ## Run
 ```
-./deploy.sh
+create index
+sh insertIndex.sh
+sh deploy.sh
 ```
 
 ## What is the main HTTP service?
