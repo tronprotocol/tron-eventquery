@@ -14,8 +14,7 @@ mvn package
 
 ## Run
 ```
-cd target
-nohup java -jar troneventquery-1.0.0-SNAPSHOT.jar &
+nohup java -jar target/troneventquery-1.0.0-SNAPSHOT.jar &
 ```
 
 ## What is the main HTTP service?
