@@ -29,4 +29,5 @@ db.contractevent.ensureIndex({eventName:-1})
 db.block.ensureIndex({blockNumber:-1})
 db.block.ensureIndex({blockHash:-1})
 db.block.ensureIndex({timeStamp:-1})
+db.block.ensureIndex({latestSolidifiedBlockNumber:-1})
 EOF

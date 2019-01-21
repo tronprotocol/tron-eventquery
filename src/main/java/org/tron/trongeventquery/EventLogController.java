@@ -50,6 +50,32 @@ public class EventLogController {
     return queryResult;
   }
 
+  @RequestMapping(method = RequestMethod.GET, value = "/verify/events")
+  public List<ContractEventTriggerEntity> verifyEvents(
+      @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
+      @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
+      @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
+      @RequestParam(value = "start", required = false, defaultValue = "0") int start
+  ) {
+
+    QueryFactory query = new QueryFactory();
+    query.setPageniate(QueryFactory.setPagniateVariable(0, 1, "-latestSolidifiedBlockNumber"));
+    List<BlockTriggerEntity> blockList = mongoTemplate.find(query.getQuery(),
+        BlockTriggerEntity.class);
+    if (blockList.isEmpty()) return null;
+
+    long lastestBlockNumber = blockList.get(0).getLatestSolidifiedBlockNumber();
+    query = new QueryFactory();
+    query.setBlockNumGte(lastestBlockNumber);
+    query.setTimestampGreaterEqual(timestamp);
+    query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
+    List<ContractEventTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
+        ContractEventTriggerEntity.class);
+
+
+    return queryResult;
+  }
+
   @RequestMapping(method = RequestMethod.GET, value = "/events/transaction/{transactionId}")
   public List<ContractEventTriggerEntity> findOneByTransaction(@PathVariable String transactionId) {
     QueryFactory query = new QueryFactory();
