@@ -37,7 +37,10 @@ public class QueryFactory {
 
   public void setTransactionIdEqual(String hash) {
     this.query.addCriteria(Criteria.where("transactionId").is(hash));
+  }
 
+  public void setBlockHashEqual(String hash) {
+    this.query.addCriteria(Criteria.where("blockHash").is(hash));
   }
 
   public void setTransferType() {

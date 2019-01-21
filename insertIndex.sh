@@ -26,4 +26,7 @@ db.contractevent.ensureIndex({contractAddress:-1})
 db.contractevent.ensureIndex({blockNumber:-1})
 db.contractevent.ensureIndex({timeStamp:-1})
 db.contractevent.ensureIndex({eventName:-1})
+db.block.ensureIndex({blockNumber:-1})
+db.block.ensureIndex({blockHash:-1})
+db.block.ensureIndex({timeStamp:-1})
 EOF
