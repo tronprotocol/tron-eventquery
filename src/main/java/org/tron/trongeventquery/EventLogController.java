@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -280,33 +279,6 @@ public class EventLogController {
     }
 
     return  addressSet.stream().collect(Collectors.toList());
-  }
-
-  private Pageable setPagniateVariable(HttpServletRequest request) {
-
-    // variables for pagniate
-    int page = 0;
-    int pageSize = 20;
-    String sort = "-timeStamp";
-
-    if (request.getParameter("page") != null && request.getParameter("page").length() > 0) {
-      page = Integer.parseInt(request.getParameter("page"));
-    } else {
-      page = 0;
-    }
-    if (request.getParameter("size") != null && request.getParameter("size").length() > 0) {
-      pageSize = Integer.parseInt(request.getParameter("size"));
-    } else {
-      pageSize = 20;
-    }
-    if (request.getParameter("sort") != null && request.getParameter("sort").length() > 0) {
-      sort = request.getParameter("sort");
-    } else {
-      sort = "-timeStamp";
-    }
-
-    return QueryFactory.make_pagination(Math.max(0,page - 1),Math.min(200,pageSize),sort);
-
   }
 
   private Pageable setPagniateVariable(int limit, String sort, int start) {
