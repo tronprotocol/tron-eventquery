@@ -50,7 +50,7 @@ public class EventLogController {
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/events/confirmed")
-  public  List<JSONObject> verifyEvents(
+  public  List<ContractEventTriggerEntity> verifyEvents(
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
@@ -72,31 +72,7 @@ public class EventLogController {
     List<ContractEventTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
         ContractEventTriggerEntity.class);
 
-    List<JSONObject> array = new ArrayList<>();
-    for(ContractEventTriggerEntity p : queryResult) {
-      Map map = new HashMap();
-      map.put("TxHash", p.getTransactionId());
-      map.put("BlockNum", p.getBlockNumer());
-      map.put("eventTime", p.getTimeStamp());
-      map.put("eventFunction", p.getEventSignatureFull());
-      map.put("evenName", p.getEventName());
-      map.put("contractAddress", p.getContractAddress());
-      map.put("latestblockNum",latestBlockNumber);
-      int i = 0;
-      Map<String, String> dataMap = p.getDataMap();
-      Map<String, String> topicMap = p.getTopicMap();
-      for (String topic : topicMap.keySet()) {
-        dataMap.put(topic, topicMap.get(topic));
-      }
-
-      while (dataMap.containsKey(String.valueOf(i))) {
-        map.put(String.valueOf(i), dataMap.get(String.valueOf(i)));
-        i++;
-      }
-      array.add(new JSONObject(map));
-    }
-
-    return array;
+    return queryResult;
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/events/transaction/{transactionId}")
@@ -152,11 +128,11 @@ public class EventLogController {
     List<JSONObject> array = new ArrayList<>();
     for(ContractEventTriggerEntity p : result) {
       Map map = new HashMap();
-      map.put("TxHash", p.getTransactionId());
-      map.put("BlockNum", p.getBlockNumer());
-      map.put("eventTime", p.getTimeStamp());
-      map.put("eventFunction", p.getEventSignatureFull());
-      map.put("evenName", p.getEventName());
+      map.put("transactionId", p.getTransactionId());
+      map.put("blockNumber", p.getBlockNumer());
+      map.put("timeStamp", p.getTimeStamp());
+      map.put("eventSignatureFull", p.getEventSignatureFull());
+      map.put("eventName", p.getEventName());
       map.put("contractAddress", p.getContractAddress());
       int i = 0;
       Map<String, String> dataMap = p.getDataMap();

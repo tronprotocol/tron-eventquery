@@ -12,7 +12,6 @@ then
    let historyTimeStamp=historyTimeStamp-24*3600*deadline*1000
 fi
 echo $historyTimeStamp
-mongo ip+port
 mongodb='mongo '$mongoIp':'$mongoPort
 $mongodb <<EOF
 use ${dbname}
