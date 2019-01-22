@@ -18,7 +18,6 @@ import org.tron.trongeventquery.TransactionTriggerEntity;
 
 @RestController
 @Component
-@PropertySource("classpath:tronscan.properties")
 public class TransferController {
   @Autowired(required = false)
   MongoTemplate mongoTemplate;
@@ -45,7 +44,6 @@ public class TransferController {
   public JSONObject getTransfers(
       /******************* Page Parameters ****************************************************/
       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
-      @RequestParam(value = "count", required = false, defaultValue = "true") boolean count,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
       /****************** Filter parameters *****************************************************/
@@ -72,9 +70,7 @@ public class TransferController {
     List<TransactionTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(), TransactionTriggerEntity.class);
     Map map = new HashMap();
     map.put("data", queryResult);
-    if (count == true) {
-      map.put("result", queryResult.size());
-    }
+    map.put("result", queryResult.size());
 
     return new JSONObject(map);
   }

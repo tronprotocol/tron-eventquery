@@ -37,7 +37,10 @@ public class QueryFactory {
 
   public void setTransactionIdEqual(String hash) {
     this.query.addCriteria(Criteria.where("transactionId").is(hash));
+  }
 
+  public void setBlockHashEqual(String hash) {
+    this.query.addCriteria(Criteria.where("blockHash").is(hash));
   }
 
   public void setTransferType() {
@@ -62,26 +65,14 @@ public class QueryFactory {
     this.query.addCriteria(Criteria.where("timeStamp").gte(timestamp));
   }
 
+  public void setRemovedEqual(boolean removed) {
+    this.query.addCriteria(Criteria.where("removed").is(removed));
+  }
+
   public void findAllTransferByAddress(String address) {
     setTransferType();
 
     this.query.addCriteria(Criteria.where("contractAddress").is(address));
-  }
-
-  public void findAllTransferByTransactionId(String trxId) {
-    Pattern pattern =Pattern.compile("^.*" + "Transfer" + ".*$",Pattern.CASE_INSENSITIVE);
-    this.query.addCriteria(Criteria.where("eventSignature").is(pattern).and("transactionId").is(trxId));
-  }
-
-
-  public void findAllTransfer(String value) {
-    Pattern pattern =Pattern.compile("^.*" + value + ".*$",Pattern.CASE_INSENSITIVE);
-    this.query.addCriteria(Criteria.where("eventSignature").is(pattern));
-  }
-
-  public void likeTopicMap(String value) {
-    Pattern pattern =Pattern.compile("^.*" + value + ".*$",Pattern.CASE_INSENSITIVE);
-    this.query.addCriteria(Criteria.where("topicMap").is(pattern));
   }
 
   public void setContractAddress (String addr) {
@@ -102,6 +93,10 @@ public class QueryFactory {
 
   public void setBlockNumGte(long block){
     this.query.addCriteria(Criteria.where("blockNumber").gte(block));
+  }
+
+  public void setBlockNumSmall(long block){
+    this.query.addCriteria(Criteria.where("blockNumber").lte(block));
   }
   public String toString (){
     return this.query.toString();

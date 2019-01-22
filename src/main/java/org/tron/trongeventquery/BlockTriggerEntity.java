@@ -38,15 +38,23 @@ public class BlockTriggerEntity implements Serializable {
   @JsonProperty(value = "triggerName")
   private String triggerName;
 
+  @Field(value = "latestSolidifiedBlockNumber")
+  @JsonProperty(value = "latestSolidifiedBlockNumber")
+  private long latestSolidifiedBlockNumber;
+
+  public long getLatestSolidifiedBlockNumber() {
+    return latestSolidifiedBlockNumber;
+  }
 
   public BlockTriggerEntity(long blockNumber, String blockHash,  long transactionSize,
-      List<String> transactionList, Long timeStamp,String triggerName) {
+      List<String> transactionList, Long timeStamp,String triggerName, long latestSolidifiedBlockNumber) {
     this.blockNumber = blockNumber;
     this.blockHash = blockHash;
     this.transactionSize = transactionSize;
     this.transactionList = transactionList;
     this.timeStamp = timeStamp;
     this.triggerName = triggerName;
+    this.latestSolidifiedBlockNumber = latestSolidifiedBlockNumber;
   }
 
 }

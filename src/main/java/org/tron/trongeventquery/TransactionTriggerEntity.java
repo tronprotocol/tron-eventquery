@@ -103,6 +103,10 @@ public class TransactionTriggerEntity implements Serializable {
   @JsonProperty(value = "contractResult")
   private String contractResult;
 
+  @Field(value = "latestSolidifiedBlockNumber")
+  @JsonProperty(value = "latestSolidifiedBlockNumber")
+  private long latestSolidifiedBlockNumber;
+
   public String getContractType() {
     return contractType;
   }
@@ -112,7 +116,7 @@ public class TransactionTriggerEntity implements Serializable {
       long energyUsageTotal, long netUsage, long netFee, List<InternalTransactionPojo> internalTrananctionList,
       String fromAddress, String toAddress, String assetName, long assetAmount,
       String contractResult,long contractCallValue, String result,
-      String contractAddress, String contractType, long feeLimit,long timeStamp) {
+      String contractAddress, String contractType, long feeLimit,long timeStamp, long latestSolidifiedBlockNumber) {
     this.transactionId = transactionId;
     this.blockHash = blockHash;
     this.blockNumber = blockNumber;
@@ -134,5 +138,6 @@ public class TransactionTriggerEntity implements Serializable {
     this.contractType = contractType;
     this.feeLimit = feeLimit;
     this.timeStamp = timeStamp;
+    this.latestSolidifiedBlockNumber = latestSolidifiedBlockNumber;
   }
 }
