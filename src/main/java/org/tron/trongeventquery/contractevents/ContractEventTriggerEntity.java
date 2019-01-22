@@ -1,4 +1,4 @@
-package org.tron.trongeventquery;
+package org.tron.trongeventquery.contractevents;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;

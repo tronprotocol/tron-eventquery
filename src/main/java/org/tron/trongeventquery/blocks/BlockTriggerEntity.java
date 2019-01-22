@@ -1,4 +1,4 @@
-package org.tron.trongeventquery;
+package org.tron.trongeventquery.blocks;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.List;

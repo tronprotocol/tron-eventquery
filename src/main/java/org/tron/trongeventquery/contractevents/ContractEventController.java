@@ -1,4 +1,4 @@
-package org.tron.trongeventquery;
+package org.tron.trongeventquery.contractevents;
 
 import com.alibaba.fastjson.JSONObject;
 import java.util.ArrayList;
@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tron.trongeventquery.query.QueryFactory;
 
 @RestController
-public class EventLogController {
+public class ContractEventController {
   @Autowired
   MongoTemplate mongoTemplate;
 
