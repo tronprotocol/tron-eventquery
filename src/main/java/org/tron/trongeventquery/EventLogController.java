@@ -50,7 +50,7 @@ public class EventLogController {
     return queryResult;
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/verify/events")
+  @RequestMapping(method = RequestMethod.GET, value = "/events/verify")
   public  List<JSONObject> verifyEvents(
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
@@ -176,7 +176,7 @@ public class EventLogController {
   }
 
   @RequestMapping(method = RequestMethod.GET,
-      value = "/event/contract/{contractAddress}/{eventName}")
+      value = "/events/contract/{contractAddress}/{eventName}")
   public List<ContractEventTriggerEntity> findByContractAddressAndEntryName(
       @PathVariable String contractAddress,
       @PathVariable String eventName,
@@ -201,7 +201,7 @@ public class EventLogController {
   }
 
   @RequestMapping(method = RequestMethod.GET,
-      value = "/event/contract/{contractAddress}/{eventName}/{blockNumber}")
+      value = "/events/contract/{contractAddress}/{eventName}/{blockNumber}")
   public List<ContractEventTriggerEntity> findByContractAddressAndEntryNameAndBlockNumber(
       @PathVariable String contractAddress,
       @PathVariable String eventName,
@@ -222,7 +222,7 @@ public class EventLogController {
   }
 
   @RequestMapping(method = RequestMethod.GET,
-      value = "/event/filter/contract/{contractAddress}/{eventName}")
+      value = "/events/filter/contract/{contractAddress}/{eventName}")
   public List<ContractEventTriggerEntity> filterevent(
       @RequestParam Map<String,String> allRequestParams,
       @PathVariable String contractAddress,
@@ -244,7 +244,7 @@ public class EventLogController {
     return result;
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/event/timestamp")
+  @RequestMapping(method = RequestMethod.GET, value = "/events/timestamp")
   public List<ContractEventTriggerEntity> findByBlockTimestampGreaterThan(
       @RequestParam(value = "contract", required = false, defaultValue = "") String contractAddress,
       @RequestParam(value = "since", required = false, defaultValue = "0") Long timestamp,
