@@ -60,18 +60,17 @@ public class EventLogController {
 
     QueryFactory query = new QueryFactory();
     query.setPageniate(QueryFactory.setPagniateVariable(0, 1, "-latestSolidifiedBlockNumber"));
-    List<BlockTriggerEntity> blockList = mongoTemplate.find(query.getQuery(),
-        BlockTriggerEntity.class);
-    if (blockList.isEmpty()) return null;
+    List<ContractEventTriggerEntity> contractEventTriggerEntityList = mongoTemplate.find(query.getQuery(),
+        ContractEventTriggerEntity.class);
+    if (contractEventTriggerEntityList.isEmpty()) return null;
 
-    long lastestBlockNumber = blockList.get(0).getLatestSolidifiedBlockNumber();
+    long lastestBlockNumber = contractEventTriggerEntityList.get(0).getLatestSolidifiedBlockNumber();
     query = new QueryFactory();
     query.setBlockNumGte(lastestBlockNumber);
     query.setTimestampGreaterEqual(timestamp);
     query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
     List<ContractEventTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
         ContractEventTriggerEntity.class);
-
 
     return queryResult;
   }
