@@ -67,6 +67,7 @@ public class EventLogController {
     query = new QueryFactory();
     query.setBlockNumSmall(latestBlockNumber);
     query.setTimestampGreaterEqual(timestamp);
+    query.setRemovedEqual(false);
     query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
     List<ContractEventTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
         ContractEventTriggerEntity.class);

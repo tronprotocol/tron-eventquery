@@ -65,6 +65,10 @@ public class QueryFactory {
     this.query.addCriteria(Criteria.where("timeStamp").gte(timestamp));
   }
 
+  public void setRemovedEqual(boolean removed) {
+    this.query.addCriteria(Criteria.where("removed").gte(removed));
+  }
+
   public void findAllTransferByAddress(String address) {
     setTransferType();
 
