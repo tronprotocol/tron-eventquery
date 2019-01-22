@@ -65,6 +65,10 @@ public class QueryFactory {
     this.query.addCriteria(Criteria.where("timeStamp").gte(timestamp));
   }
 
+  public void setUniqueIdEqual(String uniqueId) {
+    this.query.addCriteria(Criteria.where("uniqueId").is(uniqueId));
+  }
+
   public void setRemovedEqual(boolean removed) {
     this.query.addCriteria(Criteria.where("removed").is(removed));
   }

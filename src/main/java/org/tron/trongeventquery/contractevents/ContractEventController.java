@@ -50,6 +50,21 @@ public class ContractEventController {
     return queryResult;
   }
 
+  @RequestMapping(method = RequestMethod.GET, value = "/events/uniqueId/{uniqueId}")
+  public ContractEventTriggerEntity getEvent(
+      @PathVariable(value = "uniqueId", required = false) String uniqueId
+  ) {
+
+    QueryFactory query = new QueryFactory();
+    query.setUniqueIdEqual(uniqueId);
+
+    List<ContractEventTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
+        ContractEventTriggerEntity.class);
+
+    if (queryResult.size() == 0) return null;
+    return queryResult.get(0);
+  }
+
   @RequestMapping(method = RequestMethod.GET, value = "/events/confirmed")
   public  List<ContractEventTriggerEntity> verifyEvents(
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
@@ -112,8 +127,8 @@ public class ContractEventController {
        @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
        @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
        @RequestParam(value = "start", required = false, defaultValue = "0") int start,
-          @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
-          @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp
+       @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
+       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp
           ) {
 
     QueryFactory query = new QueryFactory();
@@ -201,7 +216,6 @@ public class ContractEventController {
   @RequestMapping(method = RequestMethod.GET,
       value = "/events/filter/contract/{contractAddress}/{eventName}")
   public List<ContractEventTriggerEntity> filterevent(
-      @RequestParam Map<String,String> allRequestParams,
       @PathVariable String contractAddress,
       @PathVariable String eventName,
       @RequestParam(value = "since", required = false, defaultValue = "0") Long sinceTimestamp,

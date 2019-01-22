@@ -73,6 +73,10 @@ public class ContractEventTriggerEntity {
   @JsonProperty(value = "eventName")
   private String eventName;
 
+  @Field(value = "uniqueId")
+  @JsonProperty(value = "uniqueId")
+  private String uniqueId;
+
   public long getLatestSolidifiedBlockNumber() {
     return latestSolidifiedBlockNumber;
   }
@@ -111,7 +115,7 @@ public class ContractEventTriggerEntity {
       long latestSolidifiedBlockNumber, Map<String, String> dataMap, String transactionId, String contractAddress,
       String callerAddress, String originAddress,
       String creatorAddress, Long blockNumber,String removed,long timeStamp, String triggerName,
-      String eventSignatureFull, String eventName) {
+      String eventSignatureFull, String eventName, String uniqueId) {
     this.eventSignature = eventSignature;
     this.topicMap = topicMap;
     this.dataMap = dataMap;
@@ -127,6 +131,7 @@ public class ContractEventTriggerEntity {
     this.eventSignatureFull = eventSignatureFull;
     this.eventName = eventName;
     this.latestSolidifiedBlockNumber = latestSolidifiedBlockNumber;
+    this.uniqueId = uniqueId;
   }
 
 }
