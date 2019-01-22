@@ -71,22 +71,6 @@ public class QueryFactory {
     this.query.addCriteria(Criteria.where("contractAddress").is(address));
   }
 
-  public void findAllTransferByTransactionId(String trxId) {
-    Pattern pattern =Pattern.compile("^.*" + "Transfer" + ".*$",Pattern.CASE_INSENSITIVE);
-    this.query.addCriteria(Criteria.where("eventSignature").is(pattern).and("transactionId").is(trxId));
-  }
-
-
-  public void findAllTransfer(String value) {
-    Pattern pattern =Pattern.compile("^.*" + value + ".*$",Pattern.CASE_INSENSITIVE);
-    this.query.addCriteria(Criteria.where("eventSignature").is(pattern));
-  }
-
-  public void likeTopicMap(String value) {
-    Pattern pattern =Pattern.compile("^.*" + value + ".*$",Pattern.CASE_INSENSITIVE);
-    this.query.addCriteria(Criteria.where("topicMap").is(pattern));
-  }
-
   public void setContractAddress (String addr) {
     this.query.addCriteria(Criteria.where("contractAddress").is(addr));
   }
