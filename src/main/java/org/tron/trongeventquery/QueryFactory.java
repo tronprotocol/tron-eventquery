@@ -66,7 +66,7 @@ public class QueryFactory {
   }
 
   public void setRemovedEqual(boolean removed) {
-    this.query.addCriteria(Criteria.where("removed").gte(removed));
+    this.query.addCriteria(Criteria.where("removed").is(removed));
   }
 
   public void findAllTransferByAddress(String address) {
