@@ -51,7 +51,7 @@ public class EventLogController {
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/verify/events")
-  public List<ContractEventTriggerEntity> verifyEvents(
+  public  List<JSONObject> verifyEvents(
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
@@ -64,15 +64,39 @@ public class EventLogController {
         ContractEventTriggerEntity.class);
     if (contractEventTriggerEntityList.isEmpty()) return null;
 
-    long lastestBlockNumber = contractEventTriggerEntityList.get(0).getLatestSolidifiedBlockNumber();
+    long latestBlockNumber = contractEventTriggerEntityList.get(0).getLatestSolidifiedBlockNumber();
     query = new QueryFactory();
-    query.setBlockNumGte(lastestBlockNumber);
+    query.setBlockNumSmall(latestBlockNumber);
     query.setTimestampGreaterEqual(timestamp);
     query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
     List<ContractEventTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
         ContractEventTriggerEntity.class);
 
-    return queryResult;
+    List<JSONObject> array = new ArrayList<>();
+    for(ContractEventTriggerEntity p : queryResult) {
+      Map map = new HashMap();
+      map.put("TxHash", p.getTransactionId());
+      map.put("BlockNum", p.getBlockNumer());
+      map.put("eventTime", p.getTimeStamp());
+      map.put("eventFunction", p.getEventSignatureFull());
+      map.put("evenName", p.getEventName());
+      map.put("contractAddress", p.getContractAddress());
+      map.put("latestblockNum",latestBlockNumber);
+      int i = 0;
+      Map<String, String> dataMap = p.getDataMap();
+      Map<String, String> topicMap = p.getTopicMap();
+      for (String topic : topicMap.keySet()) {
+        dataMap.put(topic, topicMap.get(topic));
+      }
+
+      while (dataMap.containsKey(String.valueOf(i))) {
+        map.put(String.valueOf(i), dataMap.get(String.valueOf(i)));
+        i++;
+      }
+      array.add(new JSONObject(map));
+    }
+
+    return array;
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/events/transaction/{transactionId}")

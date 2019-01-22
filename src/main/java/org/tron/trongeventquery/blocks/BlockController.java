@@ -66,5 +66,15 @@ public class BlockController {
 
     return new JSONObject(map);
   }
+  @RequestMapping(method = RequestMethod.GET, value = "/blocks/latestblockNum")
+  public long getLatestBlockNumber(
+  ) {
 
+    QueryFactory query = new QueryFactory();
+    query.setPageniate(QueryFactory.setPagniateVariable(0, 1, "-latestSolidifiedBlockNumber"));
+    List<BlockTriggerEntity> blockTriggerEntityList = mongoTemplate.find(query.getQuery(),
+        BlockTriggerEntity.class);
+    if (blockTriggerEntityList.isEmpty()) return 0;
+    return blockTriggerEntityList.get(0).getLatestSolidifiedBlockNumber();
+  }
 }

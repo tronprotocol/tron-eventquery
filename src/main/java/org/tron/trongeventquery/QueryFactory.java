@@ -106,6 +106,10 @@ public class QueryFactory {
   public void setBlockNumGte(long block){
     this.query.addCriteria(Criteria.where("blockNumber").gte(block));
   }
+
+  public void setBlockNumSmall(long block){
+    this.query.addCriteria(Criteria.where("blockNumber").lte(block));
+  }
   public String toString (){
     return this.query.toString();
   }
