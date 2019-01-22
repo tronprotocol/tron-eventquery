@@ -49,7 +49,7 @@ public class EventLogController {
     return queryResult;
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/events/verify")
+  @RequestMapping(method = RequestMethod.GET, value = "/events/confirmed")
   public  List<JSONObject> verifyEvents(
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
