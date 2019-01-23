@@ -88,9 +88,9 @@ public class ContractEventController {
         ContractEventTriggerEntity.class);
     if (contractEventTriggerEntityList.isEmpty()) return null;
 
-    long latestBlockNumber = contractEventTriggerEntityList.get(0).getLatestSolidifiedBlockNumber();
+    long latestSolidifiedBlockNumber = contractEventTriggerEntityList.get(0).getLatestSolidifiedBlockNumber();
     query = new QueryFactory();
-    query.setBlockNumSmall(latestBlockNumber);
+    query.setBlockNumSmall(latestSolidifiedBlockNumber);
     query.setTimestampGreaterEqual(timestamp);
     query.setRemovedEqual(false);
     query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));

@@ -65,8 +65,8 @@ public class BlockController {
 
     return new JSONObject(map);
   }
-  @RequestMapping(method = RequestMethod.GET, value = "/blocks/latestblockNum")
-  public long getLatestBlockNumber(
+  @RequestMapping(method = RequestMethod.GET, value = "/blocks/latestSolidifiedBlockNumber")
+  public long getLatestSolidifiedBlockNumber(
   ) {
 
     QueryFactory query = new QueryFactory();
