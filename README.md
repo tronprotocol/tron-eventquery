@@ -30,7 +30,8 @@ Any configuration could be modified except **mongo.dbname**, "**eventlog**" is t
 
 ## Run
 - troneventquery/deploy.sh is used to deploy troneventquery
-- troneventquery/insertIndex.sh is used to setup mongodb index to speedup query.
+- troneventquery/insertIndex.sh is used to setup mongodb index to speedup query. 
+(make sure run insertIndex before create collecions)
 
 ## What is the main HTTP service?
 baseUrl: https://api.tronex.io
