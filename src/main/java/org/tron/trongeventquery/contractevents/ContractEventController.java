@@ -36,7 +36,7 @@ public class ContractEventController {
       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start
-     ) {
+  ) {
 
     QueryFactory query = new QueryFactory();
     if (blocknum != -1) {
@@ -70,7 +70,9 @@ public class ContractEventController {
     List<ContractEventTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
         ContractEventTriggerEntity.class);
 
-    if (queryResult.size() == 0) return null;
+    if (queryResult.size() == 0) {
+      return null;
+    }
     return queryResult.get(0);
   }
 
@@ -84,11 +86,15 @@ public class ContractEventController {
 
     QueryFactory query = new QueryFactory();
     query.setPageniate(QueryFactory.setPagniateVariable(0, 1, "-latestSolidifiedBlockNumber"));
-    List<ContractEventTriggerEntity> contractEventTriggerEntityList = mongoTemplate.find(query.getQuery(),
+    List<ContractEventTriggerEntity> contractEventTriggerEntityList
+        = mongoTemplate.find(query.getQuery(),
         ContractEventTriggerEntity.class);
-    if (contractEventTriggerEntityList.isEmpty()) return null;
+    if (contractEventTriggerEntityList.isEmpty()) {
+      return null;
+    }
 
-    long latestSolidifiedBlockNumber = contractEventTriggerEntityList.get(0).getLatestSolidifiedBlockNumber();
+    long latestSolidifiedBlockNumber =
+        contractEventTriggerEntityList.get(0).getLatestSolidifiedBlockNumber();
     query = new QueryFactory();
     query.setBlockNumSmall(latestSolidifiedBlockNumber);
     query.setTimestampGreaterEqual(timestamp);
@@ -109,36 +115,16 @@ public class ContractEventController {
     return queryResult;
   }
 
-//  @RequestMapping(method = RequestMethod.GET, value = "/events/contractAddress/{contractAddress}")
-//  public List<ContractEventTriggerEntity> findByContractAddress(@PathVariable String contractAddress,
-//      @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
-//      @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
-//      @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
-//      @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
-//      @RequestParam(value = "start", required = false, defaultValue = "0") int start) {
-//    QueryFactory query = new QueryFactory();
-//    query.setContractAddress(contractAddress);
-//    query.setTimestampGreaterEqual(timestamp);
-//    if (blocknum != -1) {
-//      query.setBlockNumGte(blocknum);
-//    }
-//    query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
-//
-//    List<ContractEventTriggerEntity> result = mongoTemplate.find(query.getQuery(),
-//        ContractEventTriggerEntity.class);
-//    return result;
-//  }
-
   // get event list
   @RequestMapping(method = RequestMethod.GET, value = "/events/{contractAddress}")
-  public List<JSONObject> findEventsListByContractAddress
-      (@PathVariable String contractAddress,
-       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
-       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
-       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
-       @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
-       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp
-          ) {
+  public List<JSONObject> findEventsListByContractAddress(
+      @PathVariable String contractAddress,
+      @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
+      @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
+      @RequestParam(value = "start", required = false, defaultValue = "0") int start,
+      @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
+      @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp
+  ) {
 
     QueryFactory query = new QueryFactory();
     if (blocknum != -1) {
@@ -151,7 +137,7 @@ public class ContractEventController {
         ContractEventTriggerEntity.class);
 
     List<JSONObject> array = new ArrayList<>();
-    for(ContractEventTriggerEntity p : result) {
+    for (ContractEventTriggerEntity p : result) {
       Map map = new HashMap();
       map.put("transactionId", p.getTransactionId());
       map.put("blockNumber", p.getBlockNumber());
@@ -243,7 +229,8 @@ public class ContractEventController {
 
     query.setPageniate(this.setPagniateVariable(limit, sort, start));
     System.out.println(query.toString());
-    List<ContractEventTriggerEntity> result = mongoTemplate.find(query.getQuery(), ContractEventTriggerEntity.class);
+    List<ContractEventTriggerEntity> result =
+        mongoTemplate.find(query.getQuery(), ContractEventTriggerEntity.class);
     return result;
   }
 
@@ -272,7 +259,8 @@ public class ContractEventController {
     QueryFactory query = new QueryFactory();
     query.findAllTransferByAddress(contractAddress);
 
-    List<ContractEventTriggerEntity> contractList = mongoTemplate.find(query.getQuery(), ContractEventTriggerEntity.class);
+    List<ContractEventTriggerEntity> contractList =
+        mongoTemplate.find(query.getQuery(), ContractEventTriggerEntity.class);
     Set<String> addressSet = new HashSet<>();
     for (ContractEventTriggerEntity contract : contractList) {
       Map<String, String> topMap = contract.getTopicMap();

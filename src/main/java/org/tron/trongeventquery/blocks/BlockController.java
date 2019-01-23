@@ -48,6 +48,7 @@ public class BlockController {
     map.put("data", queryResult);
     return new JSONObject(map);
   }
+
   @RequestMapping(method = RequestMethod.GET, value = "/blocks/{hash}")
   public JSONObject getBlockbyHash(
       @PathVariable String hash
@@ -65,15 +66,16 @@ public class BlockController {
 
     return new JSONObject(map);
   }
-  @RequestMapping(method = RequestMethod.GET, value = "/blocks/latestSolidifiedBlockNumber")
-  public long getLatestSolidifiedBlockNumber(
-  ) {
 
+  @RequestMapping(method = RequestMethod.GET, value = "/blocks/latestSolidifiedBlockNumber")
+  public long getLatestSolidifiedBlockNumber() {
     QueryFactory query = new QueryFactory();
     query.setPageniate(QueryFactory.setPagniateVariable(0, 1, "-latestSolidifiedBlockNumber"));
     List<BlockTriggerEntity> blockTriggerEntityList = mongoTemplate.find(query.getQuery(),
         BlockTriggerEntity.class);
-    if (blockTriggerEntityList.isEmpty()) return 0;
+    if (blockTriggerEntityList.isEmpty()) {
+      return 0;
+    }
     return blockTriggerEntityList.get(0).getLatestSolidifiedBlockNumber();
   }
 }
