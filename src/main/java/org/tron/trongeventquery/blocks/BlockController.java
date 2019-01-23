@@ -20,7 +20,7 @@ public class BlockController {
   @Autowired(required = false)
   MongoTemplate mongoTemplate;
 
-  @RequestMapping(method = RequestMethod.GET, value = "/totalblocks")
+  @RequestMapping(method = RequestMethod.GET, value = "/blocks/total")
   public Long totalblock() {
     QueryFactory query = new QueryFactory();
     long number = mongoTemplate.count(query.getQuery(), BlockTriggerEntity.class);

@@ -20,7 +20,7 @@ public class TransactionController {
   @Autowired(required = false)
   MongoTemplate mongoTemplate;
 
-  @RequestMapping(method = RequestMethod.GET, value = "/totaltransactions")
+  @RequestMapping(method = RequestMethod.GET, value = "/transactions/total")
   public Long totaltransaction() {
     QueryFactory query = new QueryFactory();
     long number = mongoTemplate.count(query.getQuery(), TransactionTriggerEntity.class);

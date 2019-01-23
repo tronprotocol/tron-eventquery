@@ -21,14 +21,14 @@ public class TransferController {
   @Autowired(required = false)
   MongoTemplate mongoTemplate;
 
-  @RequestMapping(method = RequestMethod.GET, value = "/totaltransfers")
+  @RequestMapping(method = RequestMethod.GET, value = "/transfers/total")
   public Long totaltransfers() {
     QueryFactory query = new QueryFactory();
     query.setTransferType();
     return new Long(mongoTemplate.count(query.getQuery(), TransactionTriggerEntity.class));
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/totaltransfers/{address}")
+  @RequestMapping(method = RequestMethod.GET, value = "/transfers/total/{address}")
   public Long addressTotaltransfers(
       @PathVariable String address
   ) {
