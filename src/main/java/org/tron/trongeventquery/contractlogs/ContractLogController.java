@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tron.trongeventquery.contractevents.ContractEventTriggerEntity;
 import org.tron.trongeventquery.query.QueryFactory;
 
 @RestController
@@ -59,7 +60,7 @@ public class ContractLogController {
       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
-      @RequestParam(value = "eventName", required = false, defaultValue = "0") String eventName
+      @RequestParam(value = "eventName", required = false, defaultValue = "") String eventName
       ) {
 
     QueryFactory query = new QueryFactory();
@@ -77,5 +78,29 @@ public class ContractLogController {
     List<ContractLogTriggerEntity> result = mongoTemplate.find(query.getQuery(),
         ContractLogTriggerEntity.class);
     return result;
+  }
+
+  @RequestMapping(method = RequestMethod.GET, value = "/contractlogs/uniqueId/{uniqueId}")
+  public ContractLogTriggerEntity getEvent(
+      @PathVariable(value = "uniqueId", required = false) String uniqueId
+  ) {
+
+    QueryFactory query = new QueryFactory();
+    query.setUniqueIdEqual(uniqueId);
+
+    List<ContractLogTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
+        ContractLogTriggerEntity.class);
+
+    if (queryResult.size() == 0) return null;
+    return queryResult.get(0);
+  }
+
+  @RequestMapping(method = RequestMethod.GET, value = "/contractlogs/total")
+  public Long totalContractLog() {
+    QueryFactory query = new QueryFactory();
+    long total = mongoTemplate.count(query.getQuery(),
+        ContractLogTriggerEntity.class);
+
+    return total;
   }
 }

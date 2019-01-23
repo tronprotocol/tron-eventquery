@@ -50,6 +50,15 @@ public class ContractEventController {
     return queryResult;
   }
 
+  @RequestMapping(method = RequestMethod.GET, value = "/events/total")
+  public Long totalEvent() {
+    QueryFactory query = new QueryFactory();
+    long total = mongoTemplate.count(query.getQuery(),
+        ContractEventTriggerEntity.class);
+
+    return total;
+  }
+
   @RequestMapping(method = RequestMethod.GET, value = "/events/uniqueId/{uniqueId}")
   public ContractEventTriggerEntity getEvent(
       @PathVariable(value = "uniqueId", required = false) String uniqueId

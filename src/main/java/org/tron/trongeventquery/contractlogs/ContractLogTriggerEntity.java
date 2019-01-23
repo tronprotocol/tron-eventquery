@@ -56,11 +56,15 @@ public class ContractLogTriggerEntity {
   @JsonProperty(value = "triggerName")
   private String triggerName;
 
+  @Field(value = "uniqueId")
+  @JsonProperty(value = "uniqueId")
+  private String uniqueId;
+
   public ContractLogTriggerEntity(
       List<String> topicList, String data,  String transactionId,
       String contractAddress, String callerAddress, String originAddress,
       String creatorAddress,  Long blockNumber, String removed,
-      long latestSolidifiedBlockNumber, long timeStamp, String triggerName
+      long latestSolidifiedBlockNumber, long timeStamp, String triggerName, String uniqueId
   ) {
     this.topicList = topicList;
     this.data = data;
@@ -74,5 +78,6 @@ public class ContractLogTriggerEntity {
     this.latestSolidifiedBlockNumber = latestSolidifiedBlockNumber;
     this.timeStamp = timeStamp;
     this.triggerName = triggerName;
+    this.uniqueId = uniqueId;
   }
 }
