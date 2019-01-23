@@ -6,7 +6,7 @@ TronEvent is independent of a particular branch of java-tron, the new event subs
 For more information of tron event subscribe model, please refer to https://github.com/tronprotocol/TIPs/issues/12.
 
 ## Download sourcecode
-git clone https://github.com/tronprotocol/tron-eventquery.git
+git clone https://github.com/tronprotocol/tron-eventquery.git   
 cd troneventquery
 
 ## Build
