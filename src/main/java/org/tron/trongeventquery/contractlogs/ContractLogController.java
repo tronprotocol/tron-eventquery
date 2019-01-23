@@ -61,7 +61,7 @@ public class ContractLogController {
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
       @RequestParam(value = "eventName", required = false, defaultValue = "") String eventName
-      ) {
+  ) {
 
     QueryFactory query = new QueryFactory();
     query.setTimestampGreaterEqual(timestamp);
@@ -91,7 +91,9 @@ public class ContractLogController {
     List<ContractLogTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
         ContractLogTriggerEntity.class);
 
-    if (queryResult.size() == 0) return null;
+    if (queryResult.size() == 0) {
+      return null;
+    }
     return queryResult.get(0);
   }
 

@@ -113,10 +113,12 @@ public class TransactionTriggerEntity implements Serializable {
 
   public TransactionTriggerEntity(String transactionId, String blockHash,
       long blockNumber, long energyUsage, long energyFee, long originEnergyUsage,
-      long energyUsageTotal, long netUsage, long netFee, List<InternalTransactionPojo> internalTrananctionList,
+      long energyUsageTotal, long netUsage, long netFee,
+      List<InternalTransactionPojo> internalTrananctionList,
       String fromAddress, String toAddress, String assetName, long assetAmount,
       String contractResult,long contractCallValue, String result,
-      String contractAddress, String contractType, long feeLimit,long timeStamp, long latestSolidifiedBlockNumber) {
+      String contractAddress, String contractType,
+      long feeLimit,long timeStamp, long latestSolidifiedBlockNumber) {
     this.transactionId = transactionId;
     this.blockHash = blockHash;
     this.blockNumber = blockNumber;

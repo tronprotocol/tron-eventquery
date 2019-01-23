@@ -10,28 +10,29 @@ import org.springframework.data.mongodb.core.query.Query;
 public class QueryFactory {
   private Query query;
 
-  public static final String findByContractAndEventSinceTimestamp = "{ 'contractAddress' : ?0, " +
-      "'event_name': ?1,  " +
-      "'$or' : [ {'block_timestamp' : ?2}, {'block_timestamp' : {$gt : ?2}} ], " +
-      "'resource_Node' : {$exists : true} }";
+  public static final String findByContractAndEventSinceTimestamp = "{ 'contractAddress' : ?0, "
+      + "'event_name': ?1,  "
+      + "'$or' : [ {'block_timestamp' : ?2}, {'block_timestamp' : {$gt : ?2}} ], "
+      + "'resource_Node' : {$exists : true} }";
 
-  public static final String findByContractSinceTimeStamp = "{ 'contractAddress' : ?0, " +
-      "'$or' : [ {'block_timestamp' : ?1}, {'block_timestamp' : {$gt : ?1}} ], " +
-      "'resource_Node' : {$exists : true}}";
+  public static final String findByContractSinceTimeStamp = "{ 'contractAddress' : ?0, "
+      + "'$or' : [ {'block_timestamp' : ?1}, {'block_timestamp' : {$gt : ?1}} ], "
+      + "'resource_Node' : {$exists : true}}";
 
-  public static Pageable make_pagination(int page_num, int page_size, String sort_property){
+  public static Pageable make_pagination(int pageNum, int pageSize, String sortProperty) {
 
-    if (sort_property.charAt(0) == '-')
-      return PageRequest.of(page_num, page_size, Sort.Direction.DESC, sort_property.substring(1));
+    if (sortProperty.charAt(0) == '-') {
+      return PageRequest.of(pageNum, pageSize, Sort.Direction.DESC, sortProperty.substring(1));
+    }
 
-    return PageRequest.of(page_num, page_size, Sort.Direction.ASC, sort_property);
+    return PageRequest.of(pageNum, pageSize, Sort.Direction.ASC, sortProperty);
   }
 
   public static boolean isBool(String s) {
     return s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false");
   }
 
-  public QueryFactory(){
+  public QueryFactory() {
     this.query = new Query();
   }
 
@@ -45,7 +46,8 @@ public class QueryFactory {
 
   public void setTransferType() {
     Criteria criteria = new Criteria();
-    criteria.orOperator(Criteria.where("contractType").is("TransferContract"), Criteria.where("contractType").is("TransferAssetContract"));
+    criteria.orOperator(Criteria.where("contractType").is("TransferContract"),
+        Criteria.where("contractType").is("TransferAssetContract"));
     this.query.addCriteria(criteria);
   }
 
@@ -61,7 +63,7 @@ public class QueryFactory {
     this.query.addCriteria(Criteria.where("assetName").is(token));
   }
 
-  public void setTimestampGreaterEqual (long timestamp) {
+  public void setTimestampGreaterEqual(long timestamp) {
     this.query.addCriteria(Criteria.where("timeStamp").gte(timestamp));
   }
 
@@ -79,34 +81,37 @@ public class QueryFactory {
     this.query.addCriteria(Criteria.where("contractAddress").is(address));
   }
 
-  public void setContractAddress (String addr) {
+  public void setContractAddress(String addr) {
     this.query.addCriteria(Criteria.where("contractAddress").is(addr));
   }
 
-  public void setPageniate(Pageable page){
+  public void setPageniate(Pageable page) {
     this.query.with(page);
   }
 
-  public void setEventName (String event) {
+  public void setEventName(String event) {
     this.query.addCriteria(Criteria.where("eventName").is(event));
   }
 
-  public void setBlockNum(long block){
+  public void setBlockNum(long block) {
     this.query.addCriteria(Criteria.where("blockNumber").is(block));
   }
 
-  public void setBlockNumGte(long block){
+  public void setBlockNumGte(long block) {
     this.query.addCriteria(Criteria.where("blockNumber").gte(block));
   }
 
-  public void setBlockNumSmall(long block){
+  public void setBlockNumSmall(long block) {
     this.query.addCriteria(Criteria.where("blockNumber").lte(block));
   }
-  public String toString (){
+
+  public String toString() {
     return this.query.toString();
   }
 
-  public Query getQuery() { return this.query; }
+  public Query getQuery() {
+    return this.query;
+  }
 
   public static Pageable setPagniateVariable(int start, int size, String sort) {
     int page = start;

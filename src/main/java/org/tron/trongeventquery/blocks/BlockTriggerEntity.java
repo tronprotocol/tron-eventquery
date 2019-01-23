@@ -1,4 +1,5 @@
 package org.tron.trongeventquery.blocks;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.List;
@@ -26,8 +27,8 @@ public class BlockTriggerEntity implements Serializable {
   @JsonProperty(value = "transactionSize")
   private long transactionSize;
 
-  @Field(value="transactionList")
-  @JsonProperty(value="transactionList")
+  @Field(value = " transactionList")
+  @JsonProperty(value = "transactionList")
   private List<String> transactionList;
 
   @Field(value = "timeStamp")
@@ -47,7 +48,8 @@ public class BlockTriggerEntity implements Serializable {
   }
 
   public BlockTriggerEntity(long blockNumber, String blockHash,  long transactionSize,
-      List<String> transactionList, Long timeStamp,String triggerName, long latestSolidifiedBlockNumber) {
+      List<String> transactionList, Long timeStamp,
+      String triggerName, long latestSolidifiedBlockNumber) {
     this.blockNumber = blockNumber;
     this.blockHash = blockHash;
     this.transactionSize = transactionSize;

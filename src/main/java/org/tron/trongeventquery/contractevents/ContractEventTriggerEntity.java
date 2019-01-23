@@ -89,7 +89,9 @@ public class ContractEventTriggerEntity {
     return contractAddress;
   }
 
-  public String getTransactionId() { return transactionId; }
+  public String getTransactionId() {
+    return transactionId;
+  }
 
   public Long getBlockNumber() {
     return blockNumber;
@@ -112,7 +114,8 @@ public class ContractEventTriggerEntity {
   }
 
   public ContractEventTriggerEntity(String eventSignature, Map<String, String> topicMap,
-      long latestSolidifiedBlockNumber, Map<String, String> dataMap, String transactionId, String contractAddress,
+      long latestSolidifiedBlockNumber, Map<String, String> dataMap,
+      String transactionId, String contractAddress,
       String callerAddress, String originAddress,
       String creatorAddress, Long blockNumber,String removed,long timeStamp, String triggerName,
       String eventSignatureFull, String eventName, String uniqueId) {

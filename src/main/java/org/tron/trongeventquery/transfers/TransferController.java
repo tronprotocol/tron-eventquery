@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.tron.trongeventquery.query.QueryFactory;
 import org.tron.trongeventquery.transactions.TransactionTriggerEntity;
 
@@ -66,7 +66,8 @@ public class TransferController {
 
     query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
 
-    List<TransactionTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(), TransactionTriggerEntity.class);
+    List<TransactionTriggerEntity> queryResult =
+        mongoTemplate.find(query.getQuery(), TransactionTriggerEntity.class);
     Map map = new HashMap();
     map.put("data", queryResult);
     map.put("result", queryResult.size());
