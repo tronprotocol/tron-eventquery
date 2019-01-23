@@ -51,6 +51,10 @@ public class QueryFactory {
     this.query.addCriteria(criteria);
   }
 
+  public void setContractTypeEqual(String contractType) {
+    this.query.addCriteria(Criteria.where("contractType").is(contractType));
+  }
+
   public void setTransactionFromAddr(String fromAddr) {
     this.query.addCriteria(Criteria.where("fromAddress").is(fromAddr));
   }
