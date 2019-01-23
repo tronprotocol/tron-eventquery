@@ -33,12 +33,16 @@ public class TransactionController {
       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
+      @RequestParam(value = "contractType", required = false, defaultValue = "") String contractType,
       /****************** Filter parameters *****************************************************/
       @RequestParam(value = "block", required = false, defaultValue = "-1") long block
-  ) {
+      ) {
     QueryFactory query = new QueryFactory();
     if (block > 0) {
       query.setBlockNumGte(block);
+    }
+    if (contractType.length() != 0) {
+      query.setContractTypeEqual(contractType);
     }
     query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
     List<TransactionTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
