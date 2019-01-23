@@ -91,7 +91,7 @@ public class ContractEventTriggerEntity {
 
   public String getTransactionId() { return transactionId; }
 
-  public Long getBlockNumer() {
+  public Long getBlockNumber() {
     return blockNumber;
   }
 

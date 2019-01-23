@@ -154,7 +154,7 @@ public class ContractEventController {
     for(ContractEventTriggerEntity p : result) {
       Map map = new HashMap();
       map.put("transactionId", p.getTransactionId());
-      map.put("blockNumber", p.getBlockNumer());
+      map.put("blockNumber", p.getBlockNumber());
       map.put("timeStamp", p.getTimeStamp());
       map.put("eventSignatureFull", p.getEventSignatureFull());
       map.put("eventName", p.getEventName());
@@ -227,7 +227,7 @@ public class ContractEventController {
   public List<ContractEventTriggerEntity> filterevent(
       @PathVariable String contractAddress,
       @PathVariable String eventName,
-      @RequestParam(value = "since", required = false, defaultValue = "0") Long sinceTimestamp,
+      @RequestParam(value = "since", required = false, defaultValue = "0") Long timestamp,
       @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
@@ -236,7 +236,10 @@ public class ContractEventController {
 
     query.setContractAddress(contractAddress);
     query.setEventName(eventName);
-    query.setTimestampGreaterEqual(sinceTimestamp);
+    query.setTimestampGreaterEqual(timestamp);
+    if (blocknum != -1) {
+      query.setBlockNum(blocknum);
+    }
 
     query.setPageniate(this.setPagniateVariable(limit, sort, start));
     System.out.println(query.toString());
