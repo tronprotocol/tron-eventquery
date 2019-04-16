@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tron.trongeventquery.query.QueryFactory;
 
 @RestController
-public class ContractNotABIController {
+public class ContractWithAbiController {
 
   @Autowired
   MongoTemplate mongoTemplate;
