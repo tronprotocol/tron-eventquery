@@ -45,7 +45,7 @@ public class ContractWithAbiController {
         ContractLogTriggerEntity.class);
 
     if (abi.length() != 0) {
-      result = QueryFactory.parseWithAbi(result, abi);
+      result = QueryFactory.parseLogWithAbi(result, abi);
     }
 
     return result;
