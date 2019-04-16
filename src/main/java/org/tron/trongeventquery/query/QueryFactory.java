@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.tron.trongeventquery.contractevents.ContractEventTriggerEntity;
 import org.tron.trongeventquery.contractlogs.ContractLogTriggerEntity;
 
 public class QueryFactory {
@@ -121,6 +122,9 @@ public class QueryFactory {
 
   public static List<ContractLogTriggerEntity> parseWithAbi(List<ContractLogTriggerEntity>list, String abi) {
 
+  }
+
+  public static List<ContractEventTriggerEntity> parseWithAbi(List<ContractLogTriggerEntity>list, String abi) {
   }
 
 
