@@ -1,11 +1,13 @@
 package org.tron.trongeventquery.query;
 
+import java.util.List;
 import java.util.regex.Pattern;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.tron.trongeventquery.contractlogs.ContractLogTriggerEntity;
 
 public class QueryFactory {
   private Query query;
@@ -122,4 +124,8 @@ public class QueryFactory {
     int pageSize = size;
     return make_pagination(Math.max(0,page - 1),Math.min(200,pageSize),sort);
   }
+  public static List<ContractLogTriggerEntity> parseWithAbi(List<ContractLogTriggerEntity>list, String abi) {
+
+  }
+
 }

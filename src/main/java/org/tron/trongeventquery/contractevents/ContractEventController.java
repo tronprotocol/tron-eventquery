@@ -32,17 +32,20 @@ public class ContractEventController {
   @RequestMapping(method = RequestMethod.GET, value = "/events")
   public List<ContractEventTriggerEntity> events(
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
-      @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
+      @RequestParam(value = "block", required = false, defaultValue = "0") long blocknum,
       @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start
   ) {
 
     QueryFactory query = new QueryFactory();
-    if (blocknum != -1) {
-      query.setBlockNumGte(blocknum);
+    if (blocknum > 0) {
+      query.setBlockNumGte(0);
     }
-    query.setTimestampGreaterEqual(timestamp);
+    if (timestamp != 0) {
+      query.setTimestampGreaterEqual(timestamp);
+    }
+
     query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
     List<ContractEventTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
         ContractEventTriggerEntity.class);
