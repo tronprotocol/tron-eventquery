@@ -1,6 +1,9 @@
 package org.tron.trongeventquery.contractlogs;
 
+import com.alibaba.fastjson.JSONObject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tron.trongeventquery.contractevents.ContractEventTriggerEntity;
 import org.tron.trongeventquery.query.QueryFactory;
 
 @RestController
@@ -18,7 +22,7 @@ public class ContractWithAbiController {
 
   @RequestMapping(method = RequestMethod.POST,
       value = "/contractwithabi/contract/{contractAddress}")
-  public List<ContractLogTriggerEntity> findByContractAddressAndEntryName(
+  public JSONObject findByContractAddressAndEntryName(
       @PathVariable String contractAddress,
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
       @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
@@ -41,13 +45,24 @@ public class ContractWithAbiController {
     }
     query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
 
-    List<ContractLogTriggerEntity> result = mongoTemplate.find(query.getQuery(),
+    List<ContractLogTriggerEntity> contractLogTriggerList = mongoTemplate.find(query.getQuery(),
         ContractLogTriggerEntity.class);
 
+    List<ContractEventTriggerEntity> contractEventTriggerList = null;
     if (abi.length() != 0) {
-      result = QueryFactory.parseLogWithAbi(result, abi);
+      contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
+      contractEventTriggerList = QueryFactory.parseEventWithAbi(contractLogTriggerList, abi);
     }
 
-    return result;
+    Map map = new HashMap();
+    if (contractLogTriggerList != null && contractLogTriggerList.size() != 0) {
+      map.put("contractLogTriggers", contractLogTriggerList);
+    }
+
+    if (contractEventTriggerList != null && contractEventTriggerList.size() != 0) {
+      map.put("contractEventTriggers", contractEventTriggerList);
+    }
+
+    return new JSONObject(map);
   }
 }
