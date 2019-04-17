@@ -27,13 +27,18 @@ import org.tron.common.utils.Sha256Hash;
 @Component
 public class Wallet {
 
+
+  private static byte addressPreFixByte = (byte) 0x41;   //41 + address
+
   /**
    * Creates a new Wallet .
    */
   public Wallet() {
-
   }
 
+  public static byte getAddressPreFixByte() {
+    return addressPreFixByte;
+  }
 
   public static String encode58Check(byte[] input) {
     byte[] hash0 = Sha256Hash.hash(input);

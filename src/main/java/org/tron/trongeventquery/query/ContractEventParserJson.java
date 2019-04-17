@@ -174,7 +174,6 @@ public class ContractEventParserJson {
         return type == Type.STRING ? new String(realBytes) : Hex.toHexString(realBytes);
       }
     } catch (OutputLengthException | ArithmeticException e) {
-      logger.debug("parseDataBytes ", e);
       log.debug("parseDataBytes ", e);
     }
     throw new UnsupportedOperationException("unsupported type:" + typeStr);
