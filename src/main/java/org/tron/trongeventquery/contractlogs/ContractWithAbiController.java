@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,8 +51,8 @@ public class ContractWithAbiController {
 
     List<ContractEventTriggerEntity> contractEventTriggerList = null;
     if (abi.length() != 0) {
-      contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
       contractEventTriggerList = QueryFactory.parseEventWithAbi(contractLogTriggerList, abi);
+      contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
     }
 
     Map map = new HashMap();
@@ -69,7 +70,7 @@ public class ContractWithAbiController {
   @RequestMapping(method = RequestMethod.POST, value = "/contractwithabi/uniqueId/{uniqueId}")
   public JSONObject getEvent(
       @PathVariable(value = "uniqueId", required = false) String uniqueId,
-      @RequestParam(value = "abi", required = false, defaultValue = "") String abi
+      @RequestBody Map<String, String> hmap
   ) {
 
     QueryFactory query = new QueryFactory();
@@ -83,9 +84,15 @@ public class ContractWithAbiController {
       return null;
     }
 
+    if (hmap.containsKey("abi") == false) {
+      return null;
+    }
+
+    String abi =  hmap.get("abi");
+
     if (abi.length() != 0) {
-      contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
       contractEventTriggerList = QueryFactory.parseEventWithAbi(contractLogTriggerList, abi);
+      contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
     }
 
     Map map = new HashMap();
@@ -114,8 +121,8 @@ public class ContractWithAbiController {
     }
 
     if (abi.length() != 0) {
-      contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
       contractEventTriggerList = QueryFactory.parseEventWithAbi(contractLogTriggerList, abi);
+      contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
     }
 
     Map map = new HashMap();
