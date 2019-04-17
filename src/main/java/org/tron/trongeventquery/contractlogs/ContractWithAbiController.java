@@ -22,7 +22,7 @@ public class ContractWithAbiController {
   MongoTemplate mongoTemplate;
 
   @RequestMapping(method = RequestMethod.POST,
-      value = "/contract/contract/{contractAddress}")
+      value = "/contract/contractAddress/{contractAddress}")
   public JSONObject findByContractAddressAndEntryName(
       @PathVariable String contractAddress,
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,

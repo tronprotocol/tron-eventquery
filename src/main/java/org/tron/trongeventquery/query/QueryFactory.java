@@ -237,7 +237,14 @@ public class QueryFactory {
   public static void parseAbi(String abiString,
       Map<String, String> abiStrMap,
       Map<String, JSONObject> abiJsonMap) {
-    JSONObject abi = JSONObject.parseObject(abiString);
+
+    JSONObject abi = null;
+    try {
+      abi = JSONObject.parseObject(abiString);
+    } catch (Exception e) {
+      return;
+    }
+
     JSONArray entrys = abi.getJSONArray("entrys");
 
     if (entrys != null) {
