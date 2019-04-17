@@ -22,7 +22,7 @@ public class ContractWithAbiController {
   MongoTemplate mongoTemplate;
 
   @RequestMapping(method = RequestMethod.POST,
-      value = "/contractwithabi/contract/{contractAddress}")
+      value = "/contract/contract/{contractAddress}")
   public JSONObject findByContractAddressAndEntryName(
       @PathVariable String contractAddress,
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
@@ -31,7 +31,7 @@ public class ContractWithAbiController {
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
       @RequestParam(value = "eventName", required = false, defaultValue = "") String eventName,
-      @RequestParam(value = "abi", required = false, defaultValue = "") String abi
+      @RequestBody Map<String, String> hmap
   ) {
 
     QueryFactory query = new QueryFactory();
@@ -48,6 +48,16 @@ public class ContractWithAbiController {
 
     List<ContractLogTriggerEntity> contractLogTriggerList = mongoTemplate.find(query.getQuery(),
         ContractLogTriggerEntity.class);
+
+    if (contractLogTriggerList.size() == 0) {
+      return null;
+    }
+
+    if (hmap.containsKey("abi") == false || hmap.get("abi").length() == 0) {
+      return null;
+    }
+
+    String abi =  hmap.get("abi");
 
     List<ContractEventTriggerEntity> contractEventTriggerList = null;
     if (abi.length() != 0) {
@@ -67,7 +77,7 @@ public class ContractWithAbiController {
     return new JSONObject(map);
   }
 
-  @RequestMapping(method = RequestMethod.POST, value = "/contractwithabi/uniqueId/{uniqueId}")
+  @RequestMapping(method = RequestMethod.POST, value = "/contract/uniqueId/{uniqueId}")
   public JSONObject getEvent(
       @PathVariable(value = "uniqueId", required = false) String uniqueId,
       @RequestBody Map<String, String> hmap
@@ -84,7 +94,7 @@ public class ContractWithAbiController {
       return null;
     }
 
-    if (hmap.containsKey("abi") == false) {
+    if (hmap.containsKey("abi") == false || hmap.get("abi").length() == 0) {
       return null;
     }
 
@@ -107,9 +117,9 @@ public class ContractWithAbiController {
     return new JSONObject(map);
   }
 
-  @RequestMapping(method = RequestMethod.POST, value = "/contractwithabi/transaction/{transactionId}")
+  @RequestMapping(method = RequestMethod.POST, value = "/contract/transaction/{transactionId}")
   public JSONObject findOneByTransaction(@PathVariable String transactionId,
-      @RequestParam(value = "abi", required = false, defaultValue = "") String abi) {
+      @RequestBody Map<String, String> hmap) {
     QueryFactory query = new QueryFactory();
     query.setTransactionIdEqual(transactionId);
     List<ContractLogTriggerEntity> contractLogTriggerList = mongoTemplate.find(query.getQuery(),
@@ -120,6 +130,11 @@ public class ContractWithAbiController {
       return null;
     }
 
+    if (hmap.containsKey("abi") == false || hmap.get("abi").length() == 0) {
+      return null;
+    }
+
+    String abi =  hmap.get("abi");
     if (abi.length() != 0) {
       contractEventTriggerList = QueryFactory.parseEventWithAbi(contractLogTriggerList, abi);
       contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
