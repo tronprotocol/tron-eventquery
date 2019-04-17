@@ -14,9 +14,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.tron.common.crypto.Hash;
+import org.tron.common.runtime.vm.DataWord;
 import org.tron.common.runtime.vm.LogInfo;
 import org.tron.trongeventquery.contractevents.ContractEventTriggerEntity;
 import org.tron.trongeventquery.contractlogs.ContractLogTriggerEntity;
+import org.tron.trongeventquery.contractlogs.DataWordEntity;
+import org.tron.trongeventquery.contractlogs.LogInfoEntity;
 
 public class QueryFactory {
 
@@ -139,7 +142,14 @@ public class QueryFactory {
     parseAbi(abi, abiStrMap, abiJsonMap);
 
     for (ContractLogTriggerEntity trigger : triggers) {
-      LogInfo logInfo = trigger.getRawData();
+      LogInfoEntity logInfoEntity = trigger.getRawData();
+      List<DataWordEntity> topics = logInfoEntity.getTopics();
+      List<DataWord> mTopics = new ArrayList<>();
+      for (DataWordEntity t : topics) {
+        mTopics.add(new DataWord(t.getData()));
+      }
+      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress(), mTopics,
+          logInfoEntity.getData());
       String logHash = logInfo.getTopics().get(0).toString();
 
       if (abiStrMap.get(logHash) == null) {
@@ -179,7 +189,14 @@ public class QueryFactory {
     parseAbi(abi, abiStrMap, abiJsonMap);
 
     for (ContractLogTriggerEntity trigger : triggers) {
-      LogInfo logInfo = trigger.getRawData();
+      LogInfoEntity logInfoEntity = trigger.getRawData();
+      List<DataWordEntity> topics = logInfoEntity.getTopics();
+      List<DataWord> mTopics = new ArrayList<>();
+      for (DataWordEntity t : topics) {
+        mTopics.add(new DataWord(t.getData()));
+      }
+      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress(), mTopics,
+          logInfoEntity.getData());
       String logHash = logInfo.getTopics().get(0).toString();
 
       if (abiStrMap.get(logHash) != null) {

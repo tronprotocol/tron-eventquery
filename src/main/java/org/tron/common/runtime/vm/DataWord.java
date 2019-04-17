@@ -17,7 +17,6 @@
  */
 package org.tron.common.runtime.vm;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -63,11 +62,6 @@ public class DataWord implements Comparable<DataWord> {
     this.data = targetByteBuffer.array();
   }
 
-  @JsonCreator
-  public DataWord(String data) {
-    this(Hex.decode(data));
-  }
-
   public DataWord(byte[] data) {
     if (data == null) {
       this.data = ByteUtil.EMPTY_BYTE_ARRAY;
@@ -97,85 +91,11 @@ public class DataWord implements Comparable<DataWord> {
     return ret;
   }
 
-  public byte[] getNoLeadZeroesData() {
-    return ByteUtil.stripLeadingZeroes(data);
-  }
-
-  public byte[] getLast20Bytes() {
-    return Arrays.copyOfRange(data, 12, data.length);
-  }
-
   public BigInteger value() {
     return new BigInteger(1, data);
   }
 
-  /**
-   * Converts this DataWord to an int, checking for lost information. If this DataWord is out of the
-   * possible range for an int result then an ArithmeticException is thrown.
-   *
-   * @return this DataWord converted to an int.
-   * @throws ArithmeticException - if this will not fit in an int.
-   */
-  public int intValue() {
-    int intVal = 0;
-
-    for (byte aData : data) {
-      intVal = (intVal << 8) + (aData & 0xff);
-    }
-
-    return intVal;
-  }
-
-  /**
-   * In case of int overflow returns Integer.MAX_VALUE otherwise works as #intValue()
-   */
-  public int intValueSafe() {
-    int bytesOccupied = bytesOccupied();
-    int intValue = intValue();
-    if (bytesOccupied > 4 || intValue < 0) {
-      return Integer.MAX_VALUE;
-    }
-    return intValue;
-  }
-
-  /**
-   * Converts this DataWord to a long, checking for lost information. If this DataWord is out of the
-   * possible range for a long result then an ArithmeticException is thrown.
-   *
-   * @return this DataWord converted to a long.
-   * @throws ArithmeticException - if this will not fit in a long.
-   */
-  public long longValue() {
-
-    long longVal = 0;
-    for (byte aData : data) {
-      longVal = (longVal << 8) + (aData & 0xff);
-    }
-
-    return longVal;
-  }
-
-  /**
-   * In case of long overflow returns Long.MAX_VALUE otherwise works as #longValue()
-   */
-  public long longValueSafe() {
-    int bytesOccupied = bytesOccupied();
-    long longValue = longValue();
-    if (bytesOccupied > 8 || longValue < 0) {
-      return Long.MAX_VALUE;
-    }
-    return longValue;
-  }
-
-  public BigInteger sValue() {
-    return new BigInteger(data);
-  }
-
   public static String bigIntValue(byte[] data) {
-    return new BigInteger(data).toString();
-  }
-
-  public String bigIntValue() {
     return new BigInteger(data).toString();
   }
 
@@ -188,216 +108,15 @@ public class DataWord implements Comparable<DataWord> {
     return true;
   }
 
-  public boolean isZero() {
-    for (byte tmp : data) {
-      if (tmp != 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  // only in case of signed operation
-  // when the number is explicit defined
-  // as negative
-  public boolean isNegative() {
-    int result = data[0] & 0x80;
-    return result == 0x80;
-  }
-
-  public DataWord and(DataWord w2) {
-
-    for (int i = 0; i < this.data.length; ++i) {
-      this.data[i] &= w2.data[i];
-    }
-    return this;
-  }
-
-  public DataWord or(DataWord w2) {
-
-    for (int i = 0; i < this.data.length; ++i) {
-      this.data[i] |= w2.data[i];
-    }
-    return this;
-  }
-
-  public DataWord xor(DataWord w2) {
-
-    for (int i = 0; i < this.data.length; ++i) {
-      this.data[i] ^= w2.data[i];
-    }
-    return this;
-  }
-
-  public void negate() {
-
-    if (this.isZero()) {
-      return;
-    }
-
-    for (int i = 0; i < this.data.length; ++i) {
-      this.data[i] = (byte) ~this.data[i];
-    }
-
-    for (int i = this.data.length - 1; i >= 0; --i) {
-      this.data[i] = (byte) (1 + this.data[i] & 0xFF);
-      if (this.data[i] != 0) {
-        break;
-      }
-    }
-  }
-
-  public void bnot() {
-    if (this.isZero()) {
-      this.data = ByteUtil.copyToArray(MAX_VALUE);
-      return;
-    }
-    this.data = ByteUtil.copyToArray(MAX_VALUE.subtract(this.value()));
-  }
-
-  // By   : Holger
-  // From : http://stackoverflow.com/a/24023466/459349
-  public void add(DataWord word) {
-    byte[] result = new byte[32];
-    for (int i = 31, overflow = 0; i >= 0; i--) {
-      int v = (this.data[i] & 0xff) + (word.data[i] & 0xff) + overflow;
-      result[i] = (byte) v;
-      overflow = v >>> 8;
-    }
-    this.data = result;
-  }
-
-  // old add-method with BigInteger quick hack
-  public void add2(DataWord word) {
-    BigInteger result = value().add(word.value());
-    this.data = ByteUtil.copyToArray(result.and(MAX_VALUE));
-  }
-
-  // TODO: mul can be done in more efficient way
-  // TODO:     with shift left shift right trick
-  // TODO      without BigInteger quick hack
-  public void mul(DataWord word) {
-    BigInteger result = value().multiply(word.value());
-    this.data = ByteUtil.copyToArray(result.and(MAX_VALUE));
-  }
-
-  // TODO: improve with no BigInteger
-  public void div(DataWord word) {
-
-    if (word.isZero()) {
-      this.and(ZERO);
-      return;
-    }
-
-    BigInteger result = value().divide(word.value());
-    this.data = ByteUtil.copyToArray(result.and(MAX_VALUE));
-  }
-
-  // TODO: improve with no BigInteger
-  public void sDiv(DataWord word) {
-
-    if (word.isZero()) {
-      this.and(ZERO);
-      return;
-    }
-
-    BigInteger result = sValue().divide(word.sValue());
-    this.data = ByteUtil.copyToArray(result.and(MAX_VALUE));
-  }
-
-  // TODO: improve with no BigInteger
-  public void sub(DataWord word) {
-    BigInteger result = value().subtract(word.value());
-    this.data = ByteUtil.copyToArray(result.and(MAX_VALUE));
-  }
-
-  // TODO: improve with no BigInteger
-  public void exp(DataWord word) {
-    BigInteger result = value().modPow(word.value(), _2_256);
-    this.data = ByteUtil.copyToArray(result);
-  }
-
-  // TODO: improve with no BigInteger
-  public void mod(DataWord word) {
-
-    if (word.isZero()) {
-      this.and(ZERO);
-      return;
-    }
-
-    BigInteger result = value().mod(word.value());
-    this.data = ByteUtil.copyToArray(result.and(MAX_VALUE));
-  }
-
-  public void sMod(DataWord word) {
-
-    if (word.isZero()) {
-      this.and(ZERO);
-      return;
-    }
-
-    BigInteger result = sValue().abs().mod(word.sValue().abs());
-    result = (sValue().signum() == -1) ? result.negate() : result;
-
-    this.data = ByteUtil.copyToArray(result.and(MAX_VALUE));
-  }
-
-  public void addmod(DataWord word1, DataWord word2) {
-    if (word2.isZero()) {
-      this.data = new byte[32];
-      return;
-    }
-
-    BigInteger result = value().add(word1.value()).mod(word2.value());
-    this.data = ByteUtil.copyToArray(result.and(MAX_VALUE));
-  }
-
-  public void mulmod(DataWord word1, DataWord word2) {
-
-    if (this.isZero() || word1.isZero() || word2.isZero()) {
-      this.data = new byte[32];
-      return;
-    }
-
-    BigInteger result = value().multiply(word1.value()).mod(word2.value());
-    this.data = ByteUtil.copyToArray(result.and(MAX_VALUE));
-  }
-
   @JsonValue
   @Override
   public String toString() {
     return Hex.toHexString(data);
   }
 
-  public String toPrefixString() {
-
-    byte[] pref = getNoLeadZeroesData();
-    if (pref.length == 0) {
-      return "";
-    }
-
-    if (pref.length < 7) {
-      return Hex.toHexString(pref);
-    }
-
-    return Hex.toHexString(pref).substring(0, 6);
-  }
-
-  public static String shortHex(byte[] data) {
-    byte[] bytes = ByteUtil.stripLeadingZeroes(data);
-    String hexValue = Hex.toHexString(bytes).toUpperCase();
-    return "0x" + hexValue.replaceFirst("^0+(?!$)", "");
-  }
-
-  public String shortHex() {
-    String hexValue = Hex.toHexString(getNoLeadZeroesData()).toUpperCase();
-    return "0x" + hexValue.replaceFirst("^0+(?!$)", "");
-  }
-
   public DataWord clone() {
     return new DataWord(Arrays.clone(data));
   }
-
 
   @Override
   public boolean equals(Object o) {
@@ -426,32 +145,6 @@ public class DataWord implements Comparable<DataWord> {
     }
     // Convert result into -1, 0 or 1 as is the convention
     return (int) Math.signum(0);
-  }
-
-  public void signExtend(byte k) {
-    if (0 > k || k > 31) {
-      throw new IndexOutOfBoundsException();
-    }
-    byte mask = this.sValue().testBit((k * 8) + 7) ? (byte) 0xff : 0;
-    for (int i = 31; i > k; i--) {
-      this.data[31 - i] = mask;
-    }
-  }
-
-  public int bytesOccupied() {
-    int firstNonZero = ByteUtil.firstNonZeroByte(data);
-    if (firstNonZero == -1) {
-      return 0;
-    }
-    return 31 - firstNonZero + 1;
-  }
-
-  public boolean isHex(String hex) {
-    return Hex.toHexString(data).equals(hex);
-  }
-
-  public String asString() {
-    return new String(getNoLeadZeroesData());
   }
 
   public String toHexString() {

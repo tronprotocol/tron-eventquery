@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.Getter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.tron.common.runtime.vm.LogInfo;
 
 @Document(collection = "contractlog")
 public class ContractLogTriggerEntity {
@@ -81,7 +80,7 @@ public class ContractLogTriggerEntity {
   @Field(value = "rawData")
   @JsonProperty(value = "rawData")
   @Getter
-  private LogInfo rawData;
+  private LogInfoEntity rawData;
 
 
   public ContractLogTriggerEntity(
@@ -89,7 +88,7 @@ public class ContractLogTriggerEntity {
       String contractAddress, String callerAddress, String originAddress,
       String creatorAddress, Long blockNumber, String removed,
       long latestSolidifiedBlockNumber, long timeStamp, String triggerName, String uniqueId,
-      LogInfo rawData, String abiString
+      LogInfoEntity rawData, String abiString
   ) {
     this.topicList = topicList;
     this.data = data;
