@@ -2,9 +2,11 @@ package org.tron.trongeventquery.contractevents;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
+import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.tron.trongeventquery.contractlogs.LogInfoEntity;
 
 @Document(collection = "contractevent")
 public class ContractEventTriggerEntity {
@@ -77,6 +79,16 @@ public class ContractEventTriggerEntity {
   @JsonProperty(value = "uniqueId")
   private String uniqueId;
 
+  @Field(value = "abiString")
+  @JsonProperty(value = "abiString")
+  @Getter
+  private String abiString;
+
+  @Field(value = "rawData")
+  @JsonProperty(value = "rawData")
+  @Getter
+  private LogInfoEntity rawData;
+
   public long getLatestSolidifiedBlockNumber() {
     return latestSolidifiedBlockNumber;
   }
@@ -118,7 +130,8 @@ public class ContractEventTriggerEntity {
       String transactionId, String contractAddress,
       String callerAddress, String originAddress,
       String creatorAddress, Long blockNumber,String removed,long timeStamp, String triggerName,
-      String eventSignatureFull, String eventName, String uniqueId) {
+      String eventSignatureFull, String eventName, String uniqueId,
+      LogInfoEntity rawData, String abiString) {
     this.eventSignature = eventSignature;
     this.topicMap = topicMap;
     this.dataMap = dataMap;
@@ -135,6 +148,8 @@ public class ContractEventTriggerEntity {
     this.eventName = eventName;
     this.latestSolidifiedBlockNumber = latestSolidifiedBlockNumber;
     this.uniqueId = uniqueId;
+    this.rawData = rawData;
+    this.abiString = abiString;
   }
 
 }

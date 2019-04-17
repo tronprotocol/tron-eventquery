@@ -146,10 +146,10 @@ public class QueryFactory {
       List<DataWordEntity> topics = logInfoEntity.getTopics();
       List<DataWord> mTopics = new ArrayList<>();
       for (DataWordEntity t : topics) {
-        mTopics.add(new DataWord(t.getData()));
+        mTopics.add(new DataWord(t.getData().getBytes()));
       }
-      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress(), mTopics,
-          logInfoEntity.getData());
+      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
+          logInfoEntity.getData().getBytes());
       String logHash = logInfo.getTopics().get(0).toString();
 
       if (abiStrMap.get(logHash) == null) {
@@ -193,10 +193,10 @@ public class QueryFactory {
       List<DataWordEntity> topics = logInfoEntity.getTopics();
       List<DataWord> mTopics = new ArrayList<>();
       for (DataWordEntity t : topics) {
-        mTopics.add(new DataWord(t.getData()));
+        mTopics.add(new DataWord(t.getData().getBytes()));
       }
-      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress(), mTopics,
-          logInfoEntity.getData());
+      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
+          logInfoEntity.getData().getBytes());
       String logHash = logInfo.getTopics().get(0).toString();
 
       if (abiStrMap.get(logHash) != null) {
@@ -223,7 +223,9 @@ public class QueryFactory {
             trigger.getTriggerName(),
             abiStrMap.get(logHash + "_full"),
             abiStrMap.get(logHash + "_name"),
-            trigger.getUniqueId()
+            trigger.getUniqueId(),
+            trigger.getRawData(),
+            trigger.getAbiString()
         );
         result.add(event);
       }

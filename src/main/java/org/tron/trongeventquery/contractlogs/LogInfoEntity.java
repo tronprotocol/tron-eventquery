@@ -11,7 +11,7 @@ public class LogInfoEntity {
   @Field(value = "address")
   @JsonProperty(value = "address")
   @Getter
-  private byte[] address = new byte[]{};
+  private String address;
 
   @Field(value = "topics")
   @JsonProperty(value = "topics")
@@ -21,10 +21,10 @@ public class LogInfoEntity {
   @Field(value = "data")
   @JsonProperty(value = "data")
   @Getter
-  private byte[] data = new byte[]{};
+  private String data;
 
-  public LogInfoEntity(byte[] address, List<DataWordEntity> topics,
-      byte[] data) {
+  public LogInfoEntity(String address, List<DataWordEntity> topics,
+      String data) {
     this.address = address;
     this.topics = topics;
     this.data = data;

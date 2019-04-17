@@ -9,9 +9,9 @@ public class DataWordEntity {
   @Field(value = "data")
   @JsonProperty(value = "data")
   @Getter
-  private byte[] data = new byte[32];
+  private String data;
 
-  public DataWordEntity(byte[] data) {
+  public DataWordEntity(String data) {
     this.data = data;
   }
 }
