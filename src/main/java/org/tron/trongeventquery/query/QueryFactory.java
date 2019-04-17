@@ -146,7 +146,7 @@ public class QueryFactory {
       List<DataWordEntity> topics = logInfoEntity.getTopics();
       List<DataWord> mTopics = new ArrayList<>();
       for (DataWordEntity t : topics) {
-        mTopics.add(new DataWord(t.getData().getBytes()));
+        mTopics.add(new DataWord(t.getData()));
       }
       LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
           logInfoEntity.getData().getBytes());
@@ -193,7 +193,7 @@ public class QueryFactory {
       List<DataWordEntity> topics = logInfoEntity.getTopics();
       List<DataWord> mTopics = new ArrayList<>();
       for (DataWordEntity t : topics) {
-        mTopics.add(new DataWord(t.getData().getBytes()));
+        mTopics.add(new DataWord(t.getData()));
       }
       LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
           logInfoEntity.getData().getBytes());

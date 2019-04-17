@@ -62,6 +62,10 @@ public class DataWord implements Comparable<DataWord> {
     this.data = targetByteBuffer.array();
   }
 
+  public DataWord(String data) {
+    this(Hex.decode(data));
+  }
+
   public DataWord(byte[] data) {
     if (data == null) {
       this.data = ByteUtil.EMPTY_BYTE_ARRAY;
