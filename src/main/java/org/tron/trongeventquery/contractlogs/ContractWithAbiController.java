@@ -66,7 +66,7 @@ public class ContractWithAbiController {
     return new JSONObject(map);
   }
 
-  @RequestMapping(method = RequestMethod.POST, value = "/contractlogs/uniqueId/{uniqueId}")
+  @RequestMapping(method = RequestMethod.POST, value = "/contractwithabi/uniqueId/{uniqueId}")
   public JSONObject getEvent(
       @PathVariable(value = "uniqueId", required = false) String uniqueId,
       @RequestParam(value = "abi", required = false, defaultValue = "") String abi
@@ -75,6 +75,36 @@ public class ContractWithAbiController {
     QueryFactory query = new QueryFactory();
     query.setUniqueIdEqual(uniqueId);
 
+    List<ContractLogTriggerEntity> contractLogTriggerList = mongoTemplate.find(query.getQuery(),
+        ContractLogTriggerEntity.class);
+    List<ContractEventTriggerEntity> contractEventTriggerList = null;
+
+    if (contractLogTriggerList.size() == 0) {
+      return null;
+    }
+
+    if (abi.length() != 0) {
+      contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
+      contractEventTriggerList = QueryFactory.parseEventWithAbi(contractLogTriggerList, abi);
+    }
+
+    Map map = new HashMap();
+    if (contractLogTriggerList != null && contractLogTriggerList.size() != 0) {
+      map.put("contractLogTriggers", contractLogTriggerList);
+    }
+
+    if (contractEventTriggerList != null && contractEventTriggerList.size() != 0) {
+      map.put("contractEventTriggers", contractEventTriggerList);
+    }
+
+    return new JSONObject(map);
+  }
+
+  @RequestMapping(method = RequestMethod.GET, value = "/contractwithabi/transaction/{transactionId}")
+  public JSONObject findOneByTransaction(@PathVariable String transactionId,
+      @RequestParam(value = "abi", required = false, defaultValue = "") String abi) {
+    QueryFactory query = new QueryFactory();
+    query.setTransactionIdEqual(transactionId);
     List<ContractLogTriggerEntity> contractLogTriggerList = mongoTemplate.find(query.getQuery(),
         ContractLogTriggerEntity.class);
     List<ContractEventTriggerEntity> contractEventTriggerList = null;
