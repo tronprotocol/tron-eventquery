@@ -100,7 +100,7 @@ public class ContractWithAbiController {
     return new JSONObject(map);
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/contractwithabi/transaction/{transactionId}")
+  @RequestMapping(method = RequestMethod.POST, value = "/contractwithabi/transaction/{transactionId}")
   public JSONObject findOneByTransaction(@PathVariable String transactionId,
       @RequestParam(value = "abi", required = false, defaultValue = "") String abi) {
     QueryFactory query = new QueryFactory();
