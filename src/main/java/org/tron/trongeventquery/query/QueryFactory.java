@@ -148,8 +148,8 @@ public class QueryFactory {
       for (DataWordEntity t : topics) {
         mTopics.add(new DataWord(t.getData()));
       }
-      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
-          logInfoEntity.getData().getBytes());
+      LogInfo logInfo = new LogInfo(Hex.decode(logInfoEntity.getAddress()), mTopics,
+          Hex.decode(logInfoEntity.getData()));
       String logHash = logInfo.getTopics().get(0).toString();
 
       if (abiStrMap.get(logHash) == null) {
@@ -195,8 +195,8 @@ public class QueryFactory {
       for (DataWordEntity t : topics) {
         mTopics.add(new DataWord(t.getData()));
       }
-      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
-          logInfoEntity.getData().getBytes());
+      LogInfo logInfo = new LogInfo(Hex.decode(logInfoEntity.getAddress()), mTopics,
+          Hex.decode(logInfoEntity.getData()));
       String logHash = logInfo.getTopics().get(0).toString();
 
       if (abiStrMap.get(logHash) != null) {
