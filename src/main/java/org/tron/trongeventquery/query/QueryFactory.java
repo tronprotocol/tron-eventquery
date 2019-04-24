@@ -239,13 +239,16 @@ public class QueryFactory {
       Map<String, JSONObject> abiJsonMap) {
 
     JSONObject abi = null;
+    JSONArray entrys = null;
+
     try {
       abi = JSONObject.parseObject(abiString);
+      if (abi != null) {
+        entrys = abi.getJSONArray("entrys");
+      }
     } catch (Exception e) {
       return;
     }
-
-    JSONArray entrys = abi.getJSONArray("entrys");
 
     if (entrys != null) {
       for (int i = 0; i < entrys.size(); i++) {
