@@ -57,12 +57,12 @@ public class ContractWithAbiController {
       return null;
     }
 
-    String abi =  hmap.get("abi");
+    String abi = hmap.get("abi");
 
     List<ContractEventTriggerEntity> contractEventTriggerList = null;
     if (abi.length() != 0) {
-      contractEventTriggerList = QueryFactory.parseEventWithAbi(contractLogTriggerList, abi);
-      contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
+      contractEventTriggerList = QueryFactory.parseEventWithAbiByLog(contractLogTriggerList, abi);
+      contractLogTriggerList = QueryFactory.parseLogWithAbiByLog(contractLogTriggerList, abi);
     }
 
     Map map = new HashMap();
@@ -98,11 +98,11 @@ public class ContractWithAbiController {
       return null;
     }
 
-    String abi =  hmap.get("abi");
+    String abi = hmap.get("abi");
 
     if (abi.length() != 0) {
-      contractEventTriggerList = QueryFactory.parseEventWithAbi(contractLogTriggerList, abi);
-      contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
+      contractEventTriggerList = QueryFactory.parseEventWithAbiByLog(contractLogTriggerList, abi);
+      contractLogTriggerList = QueryFactory.parseLogWithAbiByLog(contractLogTriggerList, abi);
     }
 
     Map map = new HashMap();
@@ -134,10 +134,10 @@ public class ContractWithAbiController {
       return null;
     }
 
-    String abi =  hmap.get("abi");
+    String abi = hmap.get("abi");
     if (abi.length() != 0) {
-      contractEventTriggerList = QueryFactory.parseEventWithAbi(contractLogTriggerList, abi);
-      contractLogTriggerList = QueryFactory.parseLogWithAbi(contractLogTriggerList, abi);
+      contractEventTriggerList = QueryFactory.parseEventWithAbiByLog(contractLogTriggerList, abi);
+      contractLogTriggerList = QueryFactory.parseLogWithAbiByLog(contractLogTriggerList, abi);
     }
 
     Map map = new HashMap();
