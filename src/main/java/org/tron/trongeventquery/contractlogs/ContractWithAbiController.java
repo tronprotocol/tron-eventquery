@@ -1,6 +1,7 @@
 package org.tron.trongeventquery.contractlogs;
 
 import com.alibaba.fastjson.JSONObject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,35 +47,7 @@ public class ContractWithAbiController {
     }
     query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
 
-    List<ContractLogTriggerEntity> contractLogTriggerList = mongoTemplate.find(query.getQuery(),
-        ContractLogTriggerEntity.class);
-
-    if (contractLogTriggerList.size() == 0) {
-      return null;
-    }
-
-    if (hmap.containsKey("abi") == false || hmap.get("abi").length() == 0) {
-      return null;
-    }
-
-    String abi = hmap.get("abi");
-
-    List<ContractEventTriggerEntity> contractEventTriggerList = null;
-    if (abi.length() != 0) {
-      contractEventTriggerList = QueryFactory.parseEventWithAbiByLog(contractLogTriggerList, abi);
-      contractLogTriggerList = QueryFactory.parseLogWithAbiByLog(contractLogTriggerList, abi);
-    }
-
-    Map map = new HashMap();
-    if (contractLogTriggerList != null && contractLogTriggerList.size() != 0) {
-      map.put("contractLogTriggers", contractLogTriggerList);
-    }
-
-    if (contractEventTriggerList != null && contractEventTriggerList.size() != 0) {
-      map.put("contractEventTriggers", contractEventTriggerList);
-    }
-
-    return new JSONObject(map);
+    return getContractTrigger(hmap, query);
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/contract/uniqueId/{uniqueId}")
@@ -86,35 +59,7 @@ public class ContractWithAbiController {
     QueryFactory query = new QueryFactory();
     query.setUniqueIdEqual(uniqueId);
 
-    List<ContractLogTriggerEntity> contractLogTriggerList = mongoTemplate.find(query.getQuery(),
-        ContractLogTriggerEntity.class);
-    List<ContractEventTriggerEntity> contractEventTriggerList = null;
-
-    if (contractLogTriggerList.size() == 0) {
-      return null;
-    }
-
-    if (hmap.containsKey("abi") == false || hmap.get("abi").length() == 0) {
-      return null;
-    }
-
-    String abi = hmap.get("abi");
-
-    if (abi.length() != 0) {
-      contractEventTriggerList = QueryFactory.parseEventWithAbiByLog(contractLogTriggerList, abi);
-      contractLogTriggerList = QueryFactory.parseLogWithAbiByLog(contractLogTriggerList, abi);
-    }
-
-    Map map = new HashMap();
-    if (contractLogTriggerList != null && contractLogTriggerList.size() != 0) {
-      map.put("contractLogTriggers", contractLogTriggerList);
-    }
-
-    if (contractEventTriggerList != null && contractEventTriggerList.size() != 0) {
-      map.put("contractEventTriggers", contractEventTriggerList);
-    }
-
-    return new JSONObject(map);
+    return getContractTrigger(hmap, query);
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/contract/transaction/{transactionId}")
@@ -122,31 +67,42 @@ public class ContractWithAbiController {
       @RequestBody Map<String, String> hmap) {
     QueryFactory query = new QueryFactory();
     query.setTransactionIdEqual(transactionId);
+
+    return getContractTrigger(hmap, query);
+  }
+
+  private JSONObject getContractTrigger(Map<String, String> hmap, QueryFactory query) {
+
     List<ContractLogTriggerEntity> contractLogTriggerList = mongoTemplate.find(query.getQuery(),
         ContractLogTriggerEntity.class);
-    List<ContractEventTriggerEntity> contractEventTriggerList = null;
+    List<ContractEventTriggerEntity> contractEventTriggerList = mongoTemplate.find(query.getQuery(),
+        ContractEventTriggerEntity.class);
 
-    if (contractLogTriggerList.size() == 0) {
+    if (contractLogTriggerList.isEmpty() && contractEventTriggerList.isEmpty()) {
       return null;
     }
 
-    if (hmap.containsKey("abi") == false || hmap.get("abi").length() == 0) {
+    if (!hmap.containsKey("abi") || hmap.get("abi").length() == 0) {
       return null;
     }
 
     String abi = hmap.get("abi");
+    List<ContractLogTriggerEntity> resLogList = new ArrayList<>();
+    List<ContractEventTriggerEntity> resEventList = new ArrayList<>();
     if (abi.length() != 0) {
-      contractEventTriggerList = QueryFactory.parseEventWithAbiByLog(contractLogTriggerList, abi);
-      contractLogTriggerList = QueryFactory.parseLogWithAbiByLog(contractLogTriggerList, abi);
+      resEventList.addAll(QueryFactory.parseEventWithAbiByLog(contractLogTriggerList, abi));
+      resLogList.addAll(QueryFactory.parseLogWithAbiByLog(contractLogTriggerList, abi));
+      resEventList.addAll(QueryFactory.parseEventWithAbiByEvent(contractEventTriggerList, abi));
+      resLogList.addAll(QueryFactory.parseLogWithAbiByEvent(contractEventTriggerList, abi));
     }
 
     Map map = new HashMap();
-    if (contractLogTriggerList != null && contractLogTriggerList.size() != 0) {
-      map.put("contractLogTriggers", contractLogTriggerList);
+    if (resLogList != null && !resLogList.isEmpty()) {
+      map.put("contractLogTriggers", resLogList);
     }
 
-    if (contractEventTriggerList != null && contractEventTriggerList.size() != 0) {
-      map.put("contractEventTriggers", contractEventTriggerList);
+    if (resEventList != null && !resEventList.isEmpty()) {
+      map.put("contractEventTriggers", resEventList);
     }
 
     return new JSONObject(map);

@@ -145,13 +145,16 @@ public class QueryFactory {
 
     for (ContractLogTriggerEntity trigger : triggers) {
       LogInfoEntity logInfoEntity = trigger.getRawData();
+      if (logInfoEntity == null){
+        result.add(trigger);
+        continue;
+      }
       List<DataWordEntity> topics = logInfoEntity.getTopics();
       List<DataWord> mTopics = new ArrayList<>();
       for (DataWordEntity t : topics) {
         mTopics.add(new DataWord(t.getData()));
       }
-      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
-          logInfoEntity.getData().getBytes());
+      LogInfo logInfo = new LogInfo(Hex.decode(logInfoEntity.getAddress()), mTopics, Hex.decode(logInfoEntity.getData()));
       String logHash = getLogHash(logInfo);
 
       if (abiStrMap.get(logHash) == null) {
@@ -191,13 +194,15 @@ public class QueryFactory {
 
     for (ContractLogTriggerEntity trigger : triggers) {
       LogInfoEntity logInfoEntity = trigger.getRawData();
+      if (logInfoEntity == null){
+        continue;
+      }
       List<DataWordEntity> topics = logInfoEntity.getTopics();
       List<DataWord> mTopics = new ArrayList<>();
       for (DataWordEntity t : topics) {
         mTopics.add(new DataWord(t.getData()));
       }
-      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
-          logInfoEntity.getData().getBytes());
+      LogInfo logInfo = new LogInfo(Hex.decode(logInfoEntity.getAddress()), mTopics, Hex.decode(logInfoEntity.getData()));
       String logHash = getLogHash(logInfo);
 
       if (abiStrMap.get(logHash) != null) {
@@ -246,13 +251,15 @@ public class QueryFactory {
 
     for (ContractEventTriggerEntity trigger : triggers) {
       LogInfoEntity logInfoEntity = trigger.getRawData();
+      if (logInfoEntity == null){
+        continue;
+      }
       List<DataWordEntity> topics = logInfoEntity.getTopics();
       List<DataWord> mTopics = new ArrayList<>();
       for (DataWordEntity t : topics) {
         mTopics.add(new DataWord(t.getData()));
       }
-      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
-          logInfoEntity.getData().getBytes());
+      LogInfo logInfo = new LogInfo(Hex.decode(logInfoEntity.getAddress()), mTopics, Hex.decode(logInfoEntity.getData()));
       String logHash = getLogHash(logInfo);
 
       if (abiStrMap.get(logHash) == null) {
@@ -292,13 +299,16 @@ public class QueryFactory {
 
     for (ContractEventTriggerEntity trigger : triggers) {
       LogInfoEntity logInfoEntity = trigger.getRawData();
+      if (logInfoEntity == null){
+        result.add(trigger);
+        continue;
+      }
       List<DataWordEntity> topics = logInfoEntity.getTopics();
       List<DataWord> mTopics = new ArrayList<>();
       for (DataWordEntity t : topics) {
         mTopics.add(new DataWord(t.getData()));
       }
-      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
-          logInfoEntity.getData().getBytes());
+      LogInfo logInfo = new LogInfo(Hex.decode(logInfoEntity.getAddress()), mTopics, Hex.decode(logInfoEntity.getData()));
       String logHash = getLogHash(logInfo);
 
       if (abiStrMap.get(logHash) != null) {
