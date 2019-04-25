@@ -1,5 +1,6 @@
 package org.tron.trongeventquery.query;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import java.util.ArrayList;
@@ -342,27 +343,26 @@ public class QueryFactory {
     JSONObject abi = null;
     JSONArray entrys = null;
 
-    try {
-      abi = JSONObject.parseObject(abiString);
-      if (abi != null) {
-        entrys = abi.getJSONArray("entrys");
-      }
-    } catch (Exception e) {
-      return;
+    Object abiObj = JSON.parse(abiString);
+    if (abiObj instanceof JSONObject) {
+      abi = (JSONObject) abiObj;
+      entrys = abi.getJSONArray("entrys");
+    } else if (abiObj instanceof JSONArray) {
+      entrys = (JSONArray) abiObj;
     }
 
     if (entrys != null) {
       for (int i = 0; i < entrys.size(); i++) {
         JSONObject entry = entrys.getJSONObject(i);
 
-        if (!entry.getString("type").equalsIgnoreCase("event")) {
+        String funcType = entry.getString("type");
+        Boolean anonymous = entry.getBoolean("anonymous");
+        if (funcType == null || !funcType.equalsIgnoreCase("event")) {
           continue;
         }
 
-        if (entry.getBoolean("anonymous") != null) {
-          if (entry.getBoolean("anonymous")) {
-            continue;
-          }
+        if (anonymous != null && anonymous) {
+          continue;
         }
 
         String inputStr = entry.getString("name") + "(";
