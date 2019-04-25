@@ -1,11 +1,13 @@
 package org.tron.trongeventquery.query;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.util.StringUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.data.domain.PageRequest;
@@ -132,7 +134,7 @@ public class QueryFactory {
     return this.query;
   }
 
-  public static List<ContractLogTriggerEntity> parseLogWithAbi(
+  public static List<ContractLogTriggerEntity> parseLogWithAbiByLog(
       List<ContractLogTriggerEntity> triggers,
       String abi) {
     List<ContractLogTriggerEntity> result = new ArrayList<>();
@@ -143,14 +145,17 @@ public class QueryFactory {
 
     for (ContractLogTriggerEntity trigger : triggers) {
       LogInfoEntity logInfoEntity = trigger.getRawData();
+      if (logInfoEntity == null){
+        result.add(trigger);
+        continue;
+      }
       List<DataWordEntity> topics = logInfoEntity.getTopics();
       List<DataWord> mTopics = new ArrayList<>();
       for (DataWordEntity t : topics) {
         mTopics.add(new DataWord(t.getData()));
       }
-      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
-          logInfoEntity.getData().getBytes());
-      String logHash = logInfo.getTopics().get(0).toString();
+      LogInfo logInfo = new LogInfo(Hex.decode(logInfoEntity.getAddress()), mTopics, Hex.decode(logInfoEntity.getData()));
+      String logHash = getLogHash(logInfo);
 
       if (abiStrMap.get(logHash) == null) {
         ContractLogTriggerEntity event = new ContractLogTriggerEntity(
@@ -178,8 +183,7 @@ public class QueryFactory {
     return result;
   }
 
-
-  public static List<ContractEventTriggerEntity> parseEventWithAbi(
+  public static List<ContractEventTriggerEntity> parseEventWithAbiByLog(
       List<ContractLogTriggerEntity> triggers,
       String abi) {
     List<ContractEventTriggerEntity> result = new ArrayList<>();
@@ -190,14 +194,122 @@ public class QueryFactory {
 
     for (ContractLogTriggerEntity trigger : triggers) {
       LogInfoEntity logInfoEntity = trigger.getRawData();
+      if (logInfoEntity == null){
+        continue;
+      }
       List<DataWordEntity> topics = logInfoEntity.getTopics();
       List<DataWord> mTopics = new ArrayList<>();
       for (DataWordEntity t : topics) {
         mTopics.add(new DataWord(t.getData()));
       }
-      LogInfo logInfo = new LogInfo(logInfoEntity.getAddress().getBytes(), mTopics,
-          logInfoEntity.getData().getBytes());
-      String logHash = logInfo.getTopics().get(0).toString();
+      LogInfo logInfo = new LogInfo(Hex.decode(logInfoEntity.getAddress()), mTopics, Hex.decode(logInfoEntity.getData()));
+      String logHash = getLogHash(logInfo);
+
+      if (abiStrMap.get(logHash) != null) {
+        List<byte[]> topicList = logInfo.getClonedTopics();
+        byte[] data = logInfo.getClonedData();
+
+        Map<String, String> topicMap = ContractEventParserJson
+            .parseTopics(topicList, abiJsonMap.get(logHash));
+        Map<String, String> dataMap = ContractEventParserJson
+            .parseEventData(data, topicList, abiJsonMap.get(logHash));
+        ContractEventTriggerEntity event = new ContractEventTriggerEntity(
+            abiStrMap.get(logHash),
+            topicMap,
+            trigger.getLatestSolidifiedBlockNumber(),
+            dataMap,
+            trigger.getTransactionId(),
+            trigger.getContractAddress(),
+            trigger.getCallerAddress(),
+            trigger.getOriginAddress(),
+            trigger.getCreatorAddress(),
+            trigger.getBlockNumber(),
+            trigger.getRemoved(),
+            trigger.getTimeStamp(),
+            trigger.getTriggerName(),
+            abiStrMap.get(logHash + "_full"),
+            abiStrMap.get(logHash + "_name"),
+            trigger.getUniqueId(),
+            trigger.getRawData(),
+            trigger.getAbiString()
+        );
+        result.add(event);
+      }
+    }
+
+    return result;
+  }
+
+  public static List<ContractLogTriggerEntity> parseLogWithAbiByEvent(
+      List<ContractEventTriggerEntity> triggers,
+      String abi) {
+    List<ContractLogTriggerEntity> result = new ArrayList<>();
+    Map<String, String> abiStrMap = new HashMap<>();
+    Map<String, JSONObject> abiJsonMap = new HashMap<>();
+
+    parseAbi(abi, abiStrMap, abiJsonMap);
+
+    for (ContractEventTriggerEntity trigger : triggers) {
+      LogInfoEntity logInfoEntity = trigger.getRawData();
+      if (logInfoEntity == null){
+        continue;
+      }
+      List<DataWordEntity> topics = logInfoEntity.getTopics();
+      List<DataWord> mTopics = new ArrayList<>();
+      for (DataWordEntity t : topics) {
+        mTopics.add(new DataWord(t.getData()));
+      }
+      LogInfo logInfo = new LogInfo(Hex.decode(logInfoEntity.getAddress()), mTopics, Hex.decode(logInfoEntity.getData()));
+      String logHash = getLogHash(logInfo);
+
+      if (abiStrMap.get(logHash) == null) {
+        ContractLogTriggerEntity event = new ContractLogTriggerEntity(
+            logInfo.getHexTopics(),
+            logInfo.getHexData(),
+            trigger.getTransactionId(),
+            trigger.getContractAddress(),
+            trigger.getCallerAddress(),
+            trigger.getOriginAddress(),
+            trigger.getCreatorAddress(),
+            trigger.getBlockNumber(),
+            trigger.getRemoved(),
+            trigger.getLatestSolidifiedBlockNumber(),
+            trigger.getTimeStamp(),
+            trigger.getTriggerName(),
+            trigger.getUniqueId(),
+            trigger.getRawData(),
+            trigger.getAbiString()
+        );
+
+        result.add(event);
+      }
+    }
+
+    return result;
+  }
+
+  public static List<ContractEventTriggerEntity> parseEventWithAbiByEvent(
+      List<ContractEventTriggerEntity> triggers,
+      String abi) {
+    List<ContractEventTriggerEntity> result = new ArrayList<>();
+    Map<String, String> abiStrMap = new HashMap<>();
+    Map<String, JSONObject> abiJsonMap = new HashMap<>();
+
+    parseAbi(abi, abiStrMap, abiJsonMap);
+
+    for (ContractEventTriggerEntity trigger : triggers) {
+      LogInfoEntity logInfoEntity = trigger.getRawData();
+      if (logInfoEntity == null){
+        result.add(trigger);
+        continue;
+      }
+      List<DataWordEntity> topics = logInfoEntity.getTopics();
+      List<DataWord> mTopics = new ArrayList<>();
+      for (DataWordEntity t : topics) {
+        mTopics.add(new DataWord(t.getData()));
+      }
+      LogInfo logInfo = new LogInfo(Hex.decode(logInfoEntity.getAddress()), mTopics, Hex.decode(logInfoEntity.getData()));
+      String logHash = getLogHash(logInfo);
 
       if (abiStrMap.get(logHash) != null) {
         List<byte[]> topicList = logInfo.getClonedTopics();
@@ -239,26 +351,28 @@ public class QueryFactory {
       Map<String, JSONObject> abiJsonMap) {
 
     JSONObject abi = null;
-    try {
-      abi = JSONObject.parseObject(abiString);
-    } catch (Exception e) {
-      return;
-    }
+    JSONArray entrys = null;
 
-    JSONArray entrys = abi.getJSONArray("entrys");
+    Object abiObj = JSON.parse(abiString);
+    if (abiObj instanceof JSONObject) {
+      abi = (JSONObject) abiObj;
+      entrys = abi.getJSONArray("entrys");
+    } else if (abiObj instanceof JSONArray) {
+      entrys = (JSONArray) abiObj;
+    }
 
     if (entrys != null) {
       for (int i = 0; i < entrys.size(); i++) {
         JSONObject entry = entrys.getJSONObject(i);
 
-        if (!entry.getString("type").equalsIgnoreCase("event")) {
+        String funcType = entry.getString("type");
+        Boolean anonymous = entry.getBoolean("anonymous");
+        if (funcType == null || !funcType.equalsIgnoreCase("event")) {
           continue;
         }
 
-        if (entry.getBoolean("anonymous") != null) {
-          if (entry.getBoolean("anonymous")) {
-            continue;
-          }
+        if (anonymous != null && anonymous) {
+          continue;
         }
 
         String inputStr = entry.getString("name") + "(";
@@ -291,6 +405,16 @@ public class QueryFactory {
         abiJsonMap.put(inputSha3, entry);
       }
     }
+  }
+
+  public static String getLogHash(LogInfo logInfo) {
+    String logHash = "";
+    List<DataWord> topics = logInfo.getTopics();
+    if (topics != null && !topics.isEmpty() && !ArrayUtils.isEmpty(topics.get(0).getData())) {
+      logHash = topics.get(0).toString();
+    }
+
+    return logHash;
   }
 
   public static Pageable setPagniateVariable(int start, int size, String sort) {
