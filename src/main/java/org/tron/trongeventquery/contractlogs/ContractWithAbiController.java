@@ -77,13 +77,14 @@ public class ContractWithAbiController {
         ContractLogTriggerEntity.class);
     List<ContractEventTriggerEntity> contractEventTriggerList = mongoTemplate.find(query.getQuery(),
         ContractEventTriggerEntity.class);
+    Map map = new HashMap();
 
     if (contractLogTriggerList.isEmpty() && contractEventTriggerList.isEmpty()) {
-      return null;
+      return new JSONObject(map);
     }
 
     if (!hmap.containsKey("abi") || hmap.get("abi").length() == 0) {
-      return null;
+      return new JSONObject(map);
     }
 
     String abi = hmap.get("abi");
@@ -96,7 +97,6 @@ public class ContractWithAbiController {
       resLogList.addAll(QueryFactory.parseLogWithAbiByEvent(contractEventTriggerList, abi));
     }
 
-    Map map = new HashMap();
     if (resLogList != null && !resLogList.isEmpty()) {
       map.put("contractLogTriggers", resLogList);
     }
