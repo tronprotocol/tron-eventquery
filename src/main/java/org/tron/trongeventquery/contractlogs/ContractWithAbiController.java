@@ -50,7 +50,7 @@ public class ContractWithAbiController {
     return getContractTrigger(hmap, query);
   }
 
-  @RequestMapping(method = RequestMethod.POST, value = "/contract/uniqueId/{uniqueId}")
+    @RequestMapping(method = RequestMethod.POST, value = "/contract/uniqueId/{uniqueId}")
   public JSONObject getEvent(
       @PathVariable(value = "uniqueId", required = false) String uniqueId,
       @RequestBody Map<String, String> hmap
