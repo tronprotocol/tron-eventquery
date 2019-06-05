@@ -72,11 +72,6 @@ public class ContractLogTriggerEntity {
   @Getter
   private String uniqueId;
 
-  @Field(value = "abiString")
-  @JsonProperty(value = "abiString")
-  @Getter
-  private String abiString;
-
   @Field(value = "rawData")
   @JsonProperty(value = "rawData")
   @Getter
@@ -88,7 +83,7 @@ public class ContractLogTriggerEntity {
       String contractAddress, String callerAddress, String originAddress,
       String creatorAddress, Long blockNumber, String removed,
       long latestSolidifiedBlockNumber, long timeStamp, String triggerName, String uniqueId,
-      LogInfoEntity rawData, String abiString
+      LogInfoEntity rawData
   ) {
     this.topicList = topicList;
     this.data = data;
@@ -104,6 +99,5 @@ public class ContractLogTriggerEntity {
     this.triggerName = triggerName;
     this.uniqueId = uniqueId;
     this.rawData = rawData;
-    this.abiString = abiString;
   }
 }
