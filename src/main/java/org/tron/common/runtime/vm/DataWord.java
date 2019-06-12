@@ -103,6 +103,12 @@ public class DataWord implements Comparable<DataWord> {
     return new BigInteger(data).toString();
   }
 
+  public static String bigUIntValue(byte[] data) {
+    byte[] uintBytes = new byte[data.length + 1];
+    System.arraycopy(data, 0, uintBytes, 1, data.length);
+    return new BigInteger(uintBytes).toString();
+  }
+
   public static boolean isZero(byte[] data) {
     for (byte tmp : data) {
       if (tmp != 0) {
