@@ -36,7 +36,7 @@ Make sure the relative path of config.conf and troneventquery jar. The config.co
 
  ## Delete expire data	
 - troneventquery/deleteData.sh is used to delete expire data
-- using crontable delete regularly mongodb expire data(if not delete, visit delay time will become too long)
+- using crontable delete regularly mongodb expire data(if not delete, the database will be too big)
 
 
 ## What is the main HTTP service?
