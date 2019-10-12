@@ -34,6 +34,10 @@ Make sure the relative path of config.conf and troneventquery jar. The config.co
 - troneventquery/insertIndex.sh is used to setup mongodb index to speedup query. 	
 (make sure run insertIndex before create collecions)	
 
+ ## Delete expire data	
+- troneventquery/deleteData.sh is used to delete expire data
+- using crontable delete regularly mongodb expire data(if not delete, visit delay time will become too long)
+
 
 ## What is the main HTTP service?
 baseUrl: https://api.tronex.io
