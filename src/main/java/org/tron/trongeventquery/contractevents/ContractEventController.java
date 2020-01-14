@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.spongycastle.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -112,54 +113,7 @@ public class ContractEventController {
     query.setTransactionIdEqual(transactionId);
     List<ContractEventTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
         ContractEventTriggerEntity.class);
-    return queryResult;
-  }
-
-  // get event list
-  @RequestMapping(method = RequestMethod.GET, value = "/events/{contractAddress}")
-  public List<JSONObject> findEventsListByContractAddress(
-      @PathVariable String contractAddress,
-      @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
-      @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
-      @RequestParam(value = "start", required = false, defaultValue = "0") int start,
-      @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
-      @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp
-  ) {
-
-    QueryFactory query = new QueryFactory();
-    if (blocknum != -1) {
-      query.setBlockNumGte(blocknum);
-    }
-    query.setContractAddress(contractAddress);
-    query.setTimestampGreaterEqual(timestamp);
-    query.setPageniate(this.setPagniateVariable(limit, sort, start));
-    List<ContractEventTriggerEntity> result = mongoTemplate.find(query.getQuery(),
-        ContractEventTriggerEntity.class);
-
-    List<JSONObject> array = new ArrayList<>();
-    for (ContractEventTriggerEntity p : result) {
-      Map map = new HashMap();
-      map.put("transactionId", p.getTransactionId());
-      map.put("blockNumber", p.getBlockNumber());
-      map.put("timeStamp", p.getTimeStamp());
-      map.put("eventSignatureFull", p.getEventSignatureFull());
-      map.put("eventName", p.getEventName());
-      map.put("contractAddress", p.getContractAddress());
-      int i = 0;
-      Map<String, String> dataMap = p.getDataMap();
-      Map<String, String> topicMap = p.getTopicMap();
-      for (String topic : topicMap.keySet()) {
-        dataMap.put(topic, topicMap.get(topic));
-      }
-
-      while (dataMap.containsKey(String.valueOf(i))) {
-        map.put(String.valueOf(i), dataMap.get(String.valueOf(i)));
-        i++;
-      }
-      array.add(new JSONObject(map));
-    }
-
-    return array;
+      return queryResult;
   }
 
   @RequestMapping(method = RequestMethod.GET,
@@ -283,4 +237,161 @@ public class ContractEventController {
 
   }
 
+  // get event list
+  @RequestMapping(method = RequestMethod.GET, value = "/events/{contractAddress}")
+  public List<JSONObject> findEventsListByContractAddress(
+      @PathVariable String contractAddress,
+      @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
+      @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
+      @RequestParam(value = "start", required = false, defaultValue = "0") int start,
+      @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
+      @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp
+  ) {
+
+    QueryFactory query = new QueryFactory();
+    if (blocknum != -1) {
+      query.setBlockNumGte(blocknum);
+    }
+    query.setContractAddress(contractAddress);
+    query.setTimestampGreaterEqual(timestamp);
+    query.setPageniate(this.setPagniateVariable(limit, sort, start));
+    List<ContractEventTriggerEntity> result = mongoTemplate.find(query.getQuery(),
+        ContractEventTriggerEntity.class);
+
+    List<JSONObject> array = new ArrayList<>();
+    for (ContractEventTriggerEntity p : result) {
+      Map map = new HashMap();
+      map.put("transactionId", p.getTransactionId());
+      map.put("blockNumber", p.getBlockNumber());
+      map.put("timeStamp", p.getTimeStamp());
+      map.put("eventSignatureFull", p.getEventSignatureFull());
+      map.put("eventName", p.getEventName());
+      map.put("contractAddress", p.getContractAddress());
+      int i = 0;
+      Map<String, String> dataMap = p.getDataMap();
+      Map<String, String> topicMap = p.getTopicMap();
+      for (String topic : topicMap.keySet()) {
+        dataMap.put(topic, topicMap.get(topic));
+      }
+
+      while (dataMap.containsKey(String.valueOf(i))) {
+        map.put(String.valueOf(i), dataMap.get(String.valueOf(i)));
+        i++;
+      }
+      array.add(new JSONObject(map));
+    }
+
+    return array;
+  }
+
+  // for tron web
+
+  @RequestMapping(method = RequestMethod.GET, value = "/events/v1/transaction/{transactionId}")
+  public List<JSONObject> findOneByTransactionTronGri (@PathVariable String transactionId) {
+    QueryFactory query = new QueryFactory();
+    query.setTransactionIdEqual(transactionId);
+    List<ContractEventTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
+        ContractEventTriggerEntity.class);
+
+    List<JSONObject> array = new ArrayList<>();
+    for (ContractEventTriggerEntity p : queryResult) {
+      Map map = new HashMap();
+      map.put("transaction_id", p.getTransactionId());
+      map.put("block_timestamp", String.valueOf(p.getTimeStamp()));
+      map.put("block_number", p.getBlockNumber());
+      map.put("result_type", getResultType(p.getEventSignatureFull(), p.getEventName()));
+      map.put("result", getResult(p.getEventSignatureFull(), p.getEventName(), p.getTopicMap(), p.getDataMap()));
+      map.put("event_index", getIndex(p.getUniqueId()));
+      map.put("event_name", p.getEventName());
+      map.put("contract_address", p.getContractAddress());
+      map.put("caller_contract_address", p.getOriginAddress());
+
+      array.add(new JSONObject(map));
+    }
+
+    return array;
+  }
+
+  // get event list
+  @RequestMapping(method = RequestMethod.GET, value = "/events/v1/{contractAddress}")
+  public List<JSONObject> findEventsByContractAddressTronGrid (
+      @PathVariable String contractAddress,
+      @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
+      @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
+      @RequestParam(value = "start", required = false, defaultValue = "0") int start,
+      @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
+      @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp
+  ) {
+
+    QueryFactory query = new QueryFactory();
+    if (blocknum != -1) {
+      query.setBlockNumGte(blocknum);
+    }
+    query.setContractAddress(contractAddress);
+    query.setTimestampGreaterEqual(timestamp);
+    query.setPageniate(this.setPagniateVariable(limit, sort, start));
+    List<ContractEventTriggerEntity> result = mongoTemplate.find(query.getQuery(),
+        ContractEventTriggerEntity.class);
+
+    List<JSONObject> array = new ArrayList<>();
+    for (ContractEventTriggerEntity p : result) {
+      Map map = new HashMap();
+      map.put("transaction_id", p.getTransactionId());
+      map.put("block_timestamp", String.valueOf(p.getTimeStamp()));
+      map.put("block_number", p.getBlockNumber());
+      map.put("result_type", getResultType(p.getEventSignatureFull(), p.getEventName()));
+      map.put("result", getResult(p.getEventSignatureFull(), p.getEventName(), p.getTopicMap(), p.getDataMap()));
+      map.put("event_index", getIndex(p.getUniqueId()));
+      map.put("event_name", p.getEventName());
+      map.put("contract_address", p.getContractAddress());
+      map.put("caller_contract_address", p.getOriginAddress());
+
+      array.add(new JSONObject(map));
+    }
+
+    return array;
+  }
+
+  List<JSONObject> getResultType(String fullName, String eventSignature) {
+    int num = eventSignature.length();
+    String newSignature = fullName.substring(num + 1, fullName.length() - 1);
+    String[] arrayList = Strings.split(newSignature, ',');
+    Map map = new HashMap();
+    List<JSONObject> array = new ArrayList<>();
+    for (String str : arrayList) {
+      String[] type = str.split(" ");
+      map.put(type[1], type[0]);
+    }
+    array.add(new JSONObject(map));
+    return array;
+  }
+
+  List<JSONObject> getResult(String fullName, String eventSignature, Map<String, String> topMap, Map<String, String> dataMap) {
+    int num = eventSignature.length();
+    String newSignature = fullName.substring(num + 1, fullName.length() - 1);
+    String[] arrayList = Strings.split(newSignature, ',');
+    Map map = new HashMap();
+    List<JSONObject> array = new ArrayList<>();
+    int i = 0;
+    for (String str : arrayList) {
+      String[] type = str.split(" ");
+
+      String ans;
+      if (topMap.containsKey(i)) {
+        ans = topMap.get(String.format("%d", i));
+      } else {
+        ans = dataMap.get(String.format("%d", i));
+      }
+      i ++;
+      map.put(type[1], ans);
+
+    }
+    array.add(new JSONObject(map));
+    return array;
+  }
+
+  int getIndex(String unique) {
+    String[]id = unique.split("_");
+    return Integer.parseInt(id[1]) - 1;
+  }
 }
