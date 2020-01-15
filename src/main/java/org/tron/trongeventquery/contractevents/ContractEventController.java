@@ -35,6 +35,10 @@ import org.tron.trongeventquery.query.QueryFactory;
 @Component
 public class ContractEventController {
   public static final String ADD_PRE_FIX_STRING_MAINNET = "41";
+  private static final int RETURN_ALL_EVENTS = 0;
+  private static final int RETURN_ONLYCONFIRMED_EVENTS = 1;
+  //private static final int RETURN_ONLYCONFIRMED_EVENTS = 1;
+
 
   @Autowired
   MongoTemplate mongoTemplate;
@@ -339,8 +343,12 @@ public class ContractEventController {
       @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
       @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp,
-      @RequestParam(value = "fingerprint", required = false, defaultValue = "") String fingerprint
-  ) {
+      @RequestParam(value = "fingerprint", required = false, defaultValue = "") String fingerprint,
+      @RequestParam(value = "onlyConfirmed", required = false, defaultValue = "") String onlyConfirmed,
+      @RequestParam(value = "onlyUnconfirmed", required = false, defaultValue = "") String onlyUnconfirmed) {
+
+    //int confirm = needConfirmed(onlyConfirmed, onlyUnconfirmed);
+
     if (sort.contains("block_timestamp")) {
       sort = sort.replace("block_timestamp", "timeStamp");
     }
@@ -375,10 +383,6 @@ public class ContractEventController {
       map.put("event_name", p.getEventName());
       map.put("contract_address", p.getContractAddress());
       map.put("caller_contract_address", p.getOriginAddress());
-
-      if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
-
-      }
 
       if (count++ == result.size()) {
         map.put("_fingerprint", Crypto.encrypt(String.format("%d", start + 1)));
@@ -449,15 +453,14 @@ public class ContractEventController {
   }
 
   // get event list
-  @RequestMapping(method = RequestMethod.GET, value = "/event/contract/{contractAddress}/{eventName}/{blockNum}")
+  @RequestMapping(method = RequestMethod.GET, value = "/event/contract/{contractAddress}/{eventName}/{blockNumber}")
   public List<JSONObject> findEventsByContractAddressAndEventNameAndBlockNumTronGrid (
       @PathVariable String contractAddress,
       @PathVariable String eventName,
-      @PathVariable Long blockNum,
+      @PathVariable String blockNumber,
       @RequestParam(value = "size", required = false, defaultValue = "20") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
-      @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
       @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp,
       @RequestParam(value = "fingerprint", required = false, defaultValue = "") String fingerprint
@@ -475,13 +478,13 @@ public class ContractEventController {
     }
 
     QueryFactory query = new QueryFactory();
-    if (blocknum != -1) {
-      query.setBlockNumGte(blocknum);
+    if (blockNumber.equalsIgnoreCase("latest")) {
+      query.setBlockNum(latestSolidifiedBlockNumber.get());
+    } else {
+      query.setBlockNum(Long.parseLong(blockNumber));
     }
     query.setContractAddress(contractAddress);
     query.setEventName(eventName);
-    query.setBlockNum(blockNum);
-
     query.setTimestampGreaterEqual(timestamp);
     query.setPageniate(this.setPagniateVariable(limit, sort, start));
     List<ContractEventTriggerEntity> result = mongoTemplate.find(query.getQuery(),
@@ -589,4 +592,13 @@ public class ContractEventController {
     Thread rePushThread = new Thread(getSolidityBlockNumber);
     rePushThread.start();
   }
+
+//  int needConfirmed(String onlyConfirmed, String onlyUnconfirmed) {
+//    if (onlyConfirmed.length() == 0 && onlyUnconfirmed.length() == 0) {
+//      return -1;
+//    }
+//    if (onlyConfirmed.length() != 0 && onlyUnconfirmed.length() != 0) {
+//
+//    }
+//  }
 }
