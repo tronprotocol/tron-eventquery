@@ -1,5 +1,8 @@
 package org.tron.trongeventquery;
 
+import static org.tron.common.utils.LogConfig.LOG;
+import static org.tron.trongeventquery.contractevents.ContractEventController.isRunRePushThread;
+
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
@@ -29,6 +32,7 @@ public class TronEventApplication {
 
   public static void main(String[] args) {
     SpringApplication.run(TronEventApplication.class, args);
+    shutdown();
   }
 
   @Bean
@@ -81,5 +85,12 @@ public class TronEventApplication {
       }
     });
     return factory;
+  }
+
+  public static void shutdown() {
+    Runnable stopThread =
+        () -> isRunRePushThread.set(false);
+    LOG.info("********register application shutdown hook********");
+    Runtime.getRuntime().addShutdownHook(new Thread(stopThread));
   }
 }

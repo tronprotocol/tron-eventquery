@@ -1,6 +1,7 @@
 package org.tron.trongeventquery.contractevents;
 
 
+import static org.tron.common.utils.LogConfig.LOG;
 import static org.tron.core.Wallet.decode58Check;
 
 import com.alibaba.fastjson.JSONObject;
@@ -10,12 +11,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,12 +32,15 @@ import org.tron.common.utils.ByteArray;
 import org.tron.trongeventquery.query.QueryFactory;
 
 @RestController
+@Component
 public class ContractEventController {
   public static final String ADD_PRE_FIX_STRING_MAINNET = "41";
 
   @Autowired
   MongoTemplate mongoTemplate;
 
+  public static AtomicBoolean isRunRePushThread = new AtomicBoolean(true);
+  public static AtomicLong latestSolidifiedBlockNumber = new AtomicLong(0);
 
   @RequestMapping(method = RequestMethod.GET, value = "/healthcheck")
   public String  healthCheck() {
@@ -367,6 +376,10 @@ public class ContractEventController {
       map.put("contract_address", p.getContractAddress());
       map.put("caller_contract_address", p.getOriginAddress());
 
+      if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
+
+      }
+
       if (count++ == result.size()) {
         map.put("_fingerprint", Crypto.encrypt(String.format("%d", start + 1)));
       }
@@ -551,4 +564,29 @@ public class ContractEventController {
     return Integer.parseInt(id[1]) - 1;
   }
 
+  private Runnable getSolidityBlockNumber =
+      () -> {
+        while (isRunRePushThread.get()) {
+          try {
+            QueryFactory query = new QueryFactory();
+            query.setPageniate(QueryFactory.setPagniateVariable(0, 1, "-latestSolidifiedBlockNumber"));
+            List<ContractEventTriggerEntity> contractEventTriggerEntityList
+                = mongoTemplate.find(query.getQuery(),
+                ContractEventTriggerEntity.class);
+            if (contractEventTriggerEntityList.isEmpty()) {
+              return;
+            }
+            latestSolidifiedBlockNumber.set(contractEventTriggerEntityList.get(0).getLatestSolidifiedBlockNumber());
+            TimeUnit.MILLISECONDS.sleep(1000L);
+          } catch (InterruptedException e) {
+            LOG.error(e.getMessage());
+          }
+        }
+      };
+
+  @PostConstruct
+  public void init() {
+    Thread rePushThread = new Thread(getSolidityBlockNumber);
+    rePushThread.start();
+  }
 }
