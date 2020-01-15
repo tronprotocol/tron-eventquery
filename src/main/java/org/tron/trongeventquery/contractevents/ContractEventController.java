@@ -22,11 +22,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tron.common.utils.ByteArray;
-import org.tron.core.Constant;
 import org.tron.trongeventquery.query.QueryFactory;
 
 @RestController
 public class ContractEventController {
+  public static final String ADD_PRE_FIX_STRING_MAINNET = "41";
+
   @Autowired
   MongoTemplate mongoTemplate;
 
@@ -516,7 +517,7 @@ public class ContractEventController {
       String tmp = ans;
       if (type[0].equals("address")) {
         ans = ByteArray.toHexString(decode58Check(ans));
-        if (StringUtils.startsWith(ans, Constant.ADD_PRE_FIX_STRING_MAINNET)) {
+        if (StringUtils.startsWith(ans, ADD_PRE_FIX_STRING_MAINNET)) {
           ans =  "0x" + ans.substring(2);
         } else {
           ans = tmp;
