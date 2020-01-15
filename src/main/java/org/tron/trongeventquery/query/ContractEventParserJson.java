@@ -1,6 +1,8 @@
 package org.tron.trongeventquery.query;
 
 
+import static org.tron.common.utils.LogConfig.LOG;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import java.util.HashMap;
@@ -11,7 +13,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.util.StringUtils;
 import org.spongycastle.util.encoders.Hex;
 
-@Slf4j(topic = "Parser")
 public class ContractEventParserJson extends ContractEventParser {
 
   /**
@@ -102,7 +103,7 @@ public class ContractEventParserJson extends ContractEventParser {
         map.put("0", Hex.toHexString(data));
       }
     } catch (UnsupportedOperationException e) {
-      log.debug("UnsupportedOperationException", e);
+      LOG.debug("UnsupportedOperationException", e);
       map.clear();
       map.put(startIndex.toString(), Hex.toHexString(data));
     }

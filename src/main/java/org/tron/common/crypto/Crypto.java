@@ -1,4 +1,6 @@
 package org.tron.common.crypto;
+import static org.tron.common.utils.LogConfig.LOG;
+
 import java.util.regex.Pattern;
 
 public class Crypto {
@@ -12,7 +14,7 @@ public class Crypto {
   static public String encrypt(String str){
     Long time = new Long(157551410);
     if(!isNumber(str)){
-      System.out.println(str + "不是数字");
+      LOG.info("not number");
       return null;
     }
 
@@ -73,9 +75,6 @@ public class Crypto {
     return number.intValue();
   }
 
-  /**
-   *  数字校验
-   * */
   public static boolean isNumber(String value) {
     String pattern = "^[0-9]*[1-9][0-9]*$";
     boolean isMatch = Pattern.matches(pattern, value);

@@ -190,7 +190,6 @@ public class ContractEventController {
     }
 
     query.setPageniate(this.setPagniateVariable(limit, sort, start));
-    System.out.println(query.toString());
     List<ContractEventTriggerEntity> result =
         mongoTemplate.find(query.getQuery(), ContractEventTriggerEntity.class);
     return result;

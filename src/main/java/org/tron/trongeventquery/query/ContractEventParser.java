@@ -1,5 +1,7 @@
 package org.tron.trongeventquery.query;
 
+import static org.tron.common.utils.LogConfig.LOG;
+
 import java.math.BigInteger;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +14,6 @@ import org.tron.common.runtime.utils.MUtil;
 import org.tron.common.runtime.vm.DataWord;
 import org.tron.core.Wallet;
 
-@Slf4j(topic = "Parser")
 public class ContractEventParser {
 
   private static final int DATAWORD_UNIT_SIZE = 32;
@@ -52,7 +53,7 @@ public class ContractEventParser {
         return type == Type.STRING ? new String(realBytes) : Hex.toHexString(realBytes);
       }
     } catch (OutputLengthException | ArithmeticException e) {
-      log.debug("parseDataBytes ", e);
+      LOG.debug("parseDataBytes ", e);
     }
     throw new UnsupportedOperationException("unsupported type:" + typeStr);
   }

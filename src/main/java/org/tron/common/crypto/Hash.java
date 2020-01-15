@@ -18,6 +18,8 @@
 
 package org.tron.common.crypto;
 
+import static org.tron.common.utils.LogConfig.LOG;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
@@ -25,7 +27,6 @@ import java.security.Security;
 import lombok.extern.slf4j.Slf4j;
 import org.tron.common.crypto.jce.TronCastleProvider;
 
-@Slf4j(topic = "crypto")
 public class Hash {
 
   private static final Provider CRYPTO_PROVIDER;
@@ -48,7 +49,7 @@ public class Hash {
       digest.update(input);
       return digest.digest();
     } catch (NoSuchAlgorithmException e) {
-      log.error("Can't find such algorithm", e);
+      LOG.error("Can't find such algorithm", e);
       throw new RuntimeException(e);
     }
   }
