@@ -1,5 +1,8 @@
 package org.tron.trongeventquery.contractevents;
 
+
+import static org.tron.core.Wallet.decode58Check;
+
 import com.alibaba.fastjson.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tron.common.utils.ByteArray;
+import org.tron.core.Constant;
 import org.tron.trongeventquery.query.QueryFactory;
 
 @RestController
@@ -233,7 +239,7 @@ public class ContractEventController {
     int page = start;
     int pageSize = limit;
 
-    return QueryFactory.make_pagination(Math.max(0,page - 1),Math.min(200,pageSize),sort);
+    return QueryFactory.make_pagination(Math.max(0,page - 1), Math.min(200,pageSize), sort);
 
   }
 
@@ -286,8 +292,9 @@ public class ContractEventController {
 
   // for tron web
 
-  @RequestMapping(method = RequestMethod.GET, value = "/events/v1/transaction/{transactionId}")
+  @RequestMapping(method = RequestMethod.GET, value = "/event/transaction/{transactionId}")
   public List<JSONObject> findOneByTransactionTronGri (@PathVariable String transactionId) {
+
     QueryFactory query = new QueryFactory();
     query.setTransactionIdEqual(transactionId);
     List<ContractEventTriggerEntity> queryResult = mongoTemplate.find(query.getQuery(),
@@ -313,15 +320,22 @@ public class ContractEventController {
   }
 
   // get event list
-  @RequestMapping(method = RequestMethod.GET, value = "/events/v1/{contractAddress}")
+  @RequestMapping(method = RequestMethod.GET, value = "/event/contract/{contractAddress}")
   public List<JSONObject> findEventsByContractAddressTronGrid (
       @PathVariable String contractAddress,
-      @RequestParam(value = "limit", required = false, defaultValue = "25") int limit,
+      @RequestParam(value = "size", required = false, defaultValue = "20") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
       @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
-      @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp
+      @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
+      @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp
   ) {
+    if (sort.contains("block_timestamp")) {
+      sort = sort.replace("block_timestamp", "timeStamp");
+    }
+    if (fromTimestamp > 0) {
+      timestamp = fromTimestamp;
+    }
 
     QueryFactory query = new QueryFactory();
     if (blocknum != -1) {
@@ -334,6 +348,7 @@ public class ContractEventController {
         ContractEventTriggerEntity.class);
 
     List<JSONObject> array = new ArrayList<>();
+    int count = 1;
     for (ContractEventTriggerEntity p : result) {
       Map map = new HashMap();
       map.put("transaction_id", p.getTransactionId());
@@ -346,6 +361,120 @@ public class ContractEventController {
       map.put("contract_address", p.getContractAddress());
       map.put("caller_contract_address", p.getOriginAddress());
 
+      if (count++ == result.size()) {
+        map.put("_fingerprint", start + 1);
+      }
+      array.add(new JSONObject(map));
+    }
+
+    return array;
+  }
+
+  // get event list
+  @RequestMapping(method = RequestMethod.GET, value = "/event/contract/{contractAddress}/{eventName}")
+  public List<JSONObject> findEventsByContractAddressAndEventNameTronGrid (
+      @PathVariable String contractAddress,
+      @PathVariable String eventName,
+      @RequestParam(value = "size", required = false, defaultValue = "20") int limit,
+      @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
+      @RequestParam(value = "start", required = false, defaultValue = "0") int start,
+      @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
+      @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
+      @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp
+  ) {
+    if (sort.contains("block_timestamp")) {
+      sort = sort.replace("block_timestamp", "timeStamp");
+    }
+    if (fromTimestamp > 0) {
+      timestamp = fromTimestamp;
+    }
+
+    QueryFactory query = new QueryFactory();
+    if (blocknum != -1) {
+      query.setBlockNumGte(blocknum);
+    }
+    query.setContractAddress(contractAddress);
+    query.setEventName(eventName);
+
+    query.setTimestampGreaterEqual(timestamp);
+    query.setPageniate(this.setPagniateVariable(limit, sort, start));
+    List<ContractEventTriggerEntity> result = mongoTemplate.find(query.getQuery(),
+        ContractEventTriggerEntity.class);
+
+    List<JSONObject> array = new ArrayList<>();
+    int count = 1;
+    for (ContractEventTriggerEntity p : result) {
+      Map map = new HashMap();
+      map.put("transaction_id", p.getTransactionId());
+      map.put("block_timestamp", String.valueOf(p.getTimeStamp()));
+      map.put("block_number", p.getBlockNumber());
+      map.put("result_type", getResultType(p.getEventSignatureFull(), p.getEventName()));
+      map.put("result", getResult(p.getEventSignatureFull(), p.getEventName(), p.getTopicMap(), p.getDataMap()));
+      map.put("event_index", getIndex(p.getUniqueId()));
+      map.put("event_name", p.getEventName());
+      map.put("contract_address", p.getContractAddress());
+      map.put("caller_contract_address", p.getOriginAddress());
+
+      if (count++ == result.size()) {
+        map.put("_fingerprint", start + 1);
+      }
+      array.add(new JSONObject(map));
+    }
+
+    return array;
+  }
+
+  // get event list
+  @RequestMapping(method = RequestMethod.GET, value = "/event/contract/{contractAddress}/{eventName}/{blockNum}")
+  public List<JSONObject> findEventsByContractAddressAndEventNameAndBlockNumTronGrid (
+      @PathVariable String contractAddress,
+      @PathVariable String eventName,
+      @PathVariable Long blockNum,
+      @RequestParam(value = "size", required = false, defaultValue = "20") int limit,
+      @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
+      @RequestParam(value = "start", required = false, defaultValue = "0") int start,
+      @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
+      @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
+      @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp
+  ) {
+    if (sort.contains("block_timestamp")) {
+      sort = sort.replace("block_timestamp", "timeStamp");
+    }
+
+    if (fromTimestamp > 0) {
+      timestamp = fromTimestamp;
+    }
+
+    QueryFactory query = new QueryFactory();
+    if (blocknum != -1) {
+      query.setBlockNumGte(blocknum);
+    }
+    query.setContractAddress(contractAddress);
+    query.setEventName(eventName);
+    query.setBlockNum(blockNum);
+
+    query.setTimestampGreaterEqual(timestamp);
+    query.setPageniate(this.setPagniateVariable(limit, sort, start));
+    List<ContractEventTriggerEntity> result = mongoTemplate.find(query.getQuery(),
+        ContractEventTriggerEntity.class);
+
+    List<JSONObject> array = new ArrayList<>();
+    int count = 1;
+    for (ContractEventTriggerEntity p : result) {
+      Map map = new HashMap();
+      map.put("transaction_id", p.getTransactionId());
+      map.put("block_timestamp", String.valueOf(p.getTimeStamp()));
+      map.put("block_number", p.getBlockNumber());
+      map.put("result_type", getResultType(p.getEventSignatureFull(), p.getEventName()));
+      map.put("result", getResult(p.getEventSignatureFull(), p.getEventName(), p.getTopicMap(), p.getDataMap()));
+      map.put("event_index", getIndex(p.getUniqueId()));
+      map.put("event_name", p.getEventName());
+      map.put("contract_address", p.getContractAddress());
+      map.put("caller_contract_address", p.getOriginAddress());
+
+      if (count++ == result.size()) {
+        map.put("_fingerprint", start + 1);
+      }
       array.add(new JSONObject(map));
     }
 
@@ -377,14 +506,25 @@ public class ContractEventController {
       String[] type = str.split(" ");
 
       String ans;
-      if (topMap.containsKey(i)) {
-        ans = topMap.get(String.format("%d", i));
+      String key = String.format("%d", i);
+      if (topMap.containsKey(key)) {
+        ans = topMap.get(key);
       } else {
-        ans = dataMap.get(String.format("%d", i));
+        ans = dataMap.get(key);
       }
+
+      String tmp = ans;
+      if (type[0].equals("address")) {
+        ans = ByteArray.toHexString(decode58Check(ans));
+        if (StringUtils.startsWith(ans, Constant.ADD_PRE_FIX_STRING_MAINNET)) {
+          ans =  "0x" + ans.substring(2);
+        } else {
+          ans = tmp;
+        }
+      }
+
       i ++;
       map.put(type[1], ans);
-
     }
     array.add(new JSONObject(map));
     return array;

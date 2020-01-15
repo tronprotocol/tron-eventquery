@@ -49,7 +49,7 @@ public class Wallet {
     return Base58.encode(inputCheck);
   }
 
-  private static byte[] decode58Check(String input) {
+  public static byte[] decode58Check(String input) {
     byte[] decodeCheck = Base58.decode(input);
     if (decodeCheck.length <= 4) {
       return null;
