@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tron.common.crypto.Crypto;
 import org.tron.common.utils.ByteArray;
 import org.tron.trongeventquery.query.QueryFactory;
 
@@ -329,13 +330,18 @@ public class ContractEventController {
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
       @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
-      @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp
+      @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp,
+      @RequestParam(value = "fingerprint", required = false, defaultValue = "") String fingerprint
   ) {
     if (sort.contains("block_timestamp")) {
       sort = sort.replace("block_timestamp", "timeStamp");
     }
     if (fromTimestamp > 0) {
       timestamp = fromTimestamp;
+    }
+
+    if (fingerprint.length() != 0) {
+      start = Crypto.decrypt(fingerprint) > 0 ? Crypto.decrypt(fingerprint) : 0;
     }
 
     QueryFactory query = new QueryFactory();
@@ -363,7 +369,7 @@ public class ContractEventController {
       map.put("caller_contract_address", p.getOriginAddress());
 
       if (count++ == result.size()) {
-        map.put("_fingerprint", start + 1);
+        map.put("_fingerprint", Crypto.encrypt(String.format("%d", start + 1)));
       }
       array.add(new JSONObject(map));
     }
@@ -381,13 +387,18 @@ public class ContractEventController {
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
       @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
-      @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp
+      @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp,
+      @RequestParam(value = "fingerprint", required = false, defaultValue = "") String fingerprint
   ) {
     if (sort.contains("block_timestamp")) {
       sort = sort.replace("block_timestamp", "timeStamp");
     }
     if (fromTimestamp > 0) {
       timestamp = fromTimestamp;
+    }
+
+    if (fingerprint.length() != 0) {
+      start = Crypto.decrypt(fingerprint) > 0 ? Crypto.decrypt(fingerprint) : 0;
     }
 
     QueryFactory query = new QueryFactory();
@@ -417,7 +428,7 @@ public class ContractEventController {
       map.put("caller_contract_address", p.getOriginAddress());
 
       if (count++ == result.size()) {
-        map.put("_fingerprint", start + 1);
+        map.put("_fingerprint", Crypto.encrypt(String.format("%d", start + 1)));
       }
       array.add(new JSONObject(map));
     }
@@ -436,7 +447,8 @@ public class ContractEventController {
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
       @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
-      @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp
+      @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp,
+      @RequestParam(value = "fingerprint", required = false, defaultValue = "") String fingerprint
   ) {
     if (sort.contains("block_timestamp")) {
       sort = sort.replace("block_timestamp", "timeStamp");
@@ -444,6 +456,10 @@ public class ContractEventController {
 
     if (fromTimestamp > 0) {
       timestamp = fromTimestamp;
+    }
+
+    if (fingerprint.length() != 0) {
+      start = Crypto.decrypt(fingerprint) > 0 ? Crypto.decrypt(fingerprint) : 0;
     }
 
     QueryFactory query = new QueryFactory();
@@ -474,7 +490,7 @@ public class ContractEventController {
       map.put("caller_contract_address", p.getOriginAddress());
 
       if (count++ == result.size()) {
-        map.put("_fingerprint", start + 1);
+        map.put("_fingerprint", Crypto.encrypt(String.format("%d", start + 1)));
       }
       array.add(new JSONObject(map));
     }
@@ -535,4 +551,5 @@ public class ContractEventController {
     String[]id = unique.split("_");
     return Integer.parseInt(id[1]) - 1;
   }
+
 }
