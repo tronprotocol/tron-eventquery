@@ -30,14 +30,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tron.common.crypto.Crypto;
 import org.tron.common.utils.ByteArray;
 import org.tron.trongeventquery.query.QueryFactory;
+import org.tron.trongeventquery.response.Response;
 
 @RestController
 @Component
 public class ContractEventController {
   public static final String ADD_PRE_FIX_STRING_MAINNET = "41";
   private static final int RETURN_ALL_EVENTS = 0;
-  private static final int RETURN_ONLYCONFIRMED_EVENTS = 1;
-  //private static final int RETURN_ONLYCONFIRMED_EVENTS = 1;
+  private static final int RETURN_ONLY_CONFIRMED_EVENTS = 1;
+  private static final int RETURN_ONLY_UNCONFIRMED_EVENTS = 2;
+  private static final int CONFILICTING_PARAMETERS = -1;
 
 
   @Autowired
@@ -118,7 +120,7 @@ public class ContractEventController {
     long latestSolidifiedBlockNumber =
         contractEventTriggerEntityList.get(0).getLatestSolidifiedBlockNumber();
     query = new QueryFactory();
-    query.setBlockNumSmall(latestSolidifiedBlockNumber);
+    query.setBlockNumLte(latestSolidifiedBlockNumber);
     query.setTimestampGreaterEqual(timestamp);
     query.setRemovedEqual(false);
     query.setPageniate(QueryFactory.setPagniateVariable(start, limit, sort));
@@ -335,19 +337,16 @@ public class ContractEventController {
 
   // get event list
   @RequestMapping(method = RequestMethod.GET, value = "/event/contract/{contractAddress}")
-  public List<JSONObject> findEventsByContractAddressTronGrid (
+  public Object findEventsByContractAddressTronGrid (
       @PathVariable String contractAddress,
       @RequestParam(value = "size", required = false, defaultValue = "20") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
-      @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
       @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp,
       @RequestParam(value = "fingerprint", required = false, defaultValue = "") String fingerprint,
       @RequestParam(value = "onlyConfirmed", required = false, defaultValue = "") String onlyConfirmed,
       @RequestParam(value = "onlyUnconfirmed", required = false, defaultValue = "") String onlyUnconfirmed) {
-
-    //int confirm = needConfirmed(onlyConfirmed, onlyUnconfirmed);
 
     if (sort.contains("block_timestamp")) {
       sort = sort.replace("block_timestamp", "timeStamp");
@@ -361,9 +360,17 @@ public class ContractEventController {
     }
 
     QueryFactory query = new QueryFactory();
-    if (blocknum != -1) {
-      query.setBlockNumGte(blocknum);
+
+    int confirm = needConfirmed(onlyConfirmed, onlyUnconfirmed);
+    if (confirm == CONFILICTING_PARAMETERS) {
+      return new Response(false, "Conflicting parameters passed.").toJSONObject();
     }
+    if (confirm == RETURN_ONLY_CONFIRMED_EVENTS) {
+      query.setBlockNumLte(latestSolidifiedBlockNumber.get());
+    } else if (confirm == RETURN_ONLY_UNCONFIRMED_EVENTS) {
+      query.setBlockNumGt(latestSolidifiedBlockNumber.get());
+    }
+
     query.setContractAddress(contractAddress);
     query.setTimestampGreaterEqual(timestamp);
     query.setPageniate(this.setPagniateVariable(limit, sort, start));
@@ -395,16 +402,17 @@ public class ContractEventController {
 
   // get event list
   @RequestMapping(method = RequestMethod.GET, value = "/event/contract/{contractAddress}/{eventName}")
-  public List<JSONObject> findEventsByContractAddressAndEventNameTronGrid (
+  public Object findEventsByContractAddressAndEventNameTronGrid (
       @PathVariable String contractAddress,
       @PathVariable String eventName,
       @RequestParam(value = "size", required = false, defaultValue = "20") int limit,
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start,
-      @RequestParam(value = "block", required = false, defaultValue = "-1") long blocknum,
       @RequestParam(value = "since", required = false, defaultValue = "0") long timestamp,
       @RequestParam(value = "fromTimestamp", required = false, defaultValue = "0") long fromTimestamp,
-      @RequestParam(value = "fingerprint", required = false, defaultValue = "") String fingerprint
+      @RequestParam(value = "fingerprint", required = false, defaultValue = "") String fingerprint,
+      @RequestParam(value = "onlyConfirmed", required = false, defaultValue = "") String onlyConfirmed,
+      @RequestParam(value = "onlyUnconfirmed", required = false, defaultValue = "") String onlyUnconfirmed
   ) {
     if (sort.contains("block_timestamp")) {
       sort = sort.replace("block_timestamp", "timeStamp");
@@ -417,10 +425,18 @@ public class ContractEventController {
       start = Crypto.decrypt(fingerprint) > 0 ? Crypto.decrypt(fingerprint) : 0;
     }
 
+
     QueryFactory query = new QueryFactory();
-    if (blocknum != -1) {
-      query.setBlockNumGte(blocknum);
+    int confirm = needConfirmed(onlyConfirmed, onlyUnconfirmed);
+    if (confirm == CONFILICTING_PARAMETERS) {
+      return new Response(false, "Conflicting parameters passed.").toJSONObject();
     }
+    if (confirm == RETURN_ONLY_CONFIRMED_EVENTS) {
+      query.setBlockNumLte(latestSolidifiedBlockNumber.get());
+    } else if (confirm == RETURN_ONLY_UNCONFIRMED_EVENTS) {
+      query.setBlockNumGt(latestSolidifiedBlockNumber.get());
+    }
+
     query.setContractAddress(contractAddress);
     query.setEventName(eventName);
 
@@ -479,10 +495,12 @@ public class ContractEventController {
 
     QueryFactory query = new QueryFactory();
     if (blockNumber.equalsIgnoreCase("latest")) {
-      query.setBlockNum(latestSolidifiedBlockNumber.get());
+      query.setBlockNumGte(latestSolidifiedBlockNumber.get());
     } else {
       query.setBlockNum(Long.parseLong(blockNumber));
     }
+
+
     query.setContractAddress(contractAddress);
     query.setEventName(eventName);
     query.setTimestampGreaterEqual(timestamp);
@@ -593,12 +611,19 @@ public class ContractEventController {
     rePushThread.start();
   }
 
-//  int needConfirmed(String onlyConfirmed, String onlyUnconfirmed) {
-//    if (onlyConfirmed.length() == 0 && onlyUnconfirmed.length() == 0) {
-//      return -1;
-//    }
-//    if (onlyConfirmed.length() != 0 && onlyUnconfirmed.length() != 0) {
-//
-//    }
-//  }
+  int needConfirmed(String onlyConfirmed, String onlyUnconfirmed) {
+    if (onlyConfirmed.length() == 0 && onlyUnconfirmed.length() == 0) {
+      return RETURN_ALL_EVENTS;
+    }
+    if (onlyConfirmed.length() != 0 && onlyUnconfirmed.length() != 0) {
+      return CONFILICTING_PARAMETERS;
+    }
+    if (onlyConfirmed.length() != 0) {
+      return Boolean.getBoolean(onlyConfirmed)?  RETURN_ONLY_CONFIRMED_EVENTS : RETURN_ONLY_UNCONFIRMED_EVENTS;
+    }
+    if (onlyUnconfirmed.length() != 0) {
+      return Boolean.getBoolean(onlyUnconfirmed)?  RETURN_ONLY_UNCONFIRMED_EVENTS : RETURN_ONLY_CONFIRMED_EVENTS;
+    }
+    return RETURN_ALL_EVENTS;
+  }
 }

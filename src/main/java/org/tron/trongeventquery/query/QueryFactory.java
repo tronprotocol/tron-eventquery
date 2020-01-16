@@ -122,7 +122,11 @@ public class QueryFactory {
     this.query.addCriteria(Criteria.where("blockNumber").gte(block));
   }
 
-  public void setBlockNumSmall(long block) {
+  public void setBlockNumGt(long block) {
+    this.query.addCriteria(Criteria.where("blockNumber").gt(block));
+  }
+
+  public void setBlockNumLte(long block) {
     this.query.addCriteria(Criteria.where("blockNumber").lte(block));
   }
 
