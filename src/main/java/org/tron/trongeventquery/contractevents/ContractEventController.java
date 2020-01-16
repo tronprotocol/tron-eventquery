@@ -468,6 +468,11 @@ public class ContractEventController {
     return array;
   }
 
+  @RequestMapping(method = RequestMethod.GET, value = "/event/contract/latestSolidifiedBlockNum")
+  public Object findLatestSolidifiedBlockNum() {
+    return latestSolidifiedBlockNumber.get();
+  }
+
   // get event list
   @RequestMapping(method = RequestMethod.GET, value = "/event/contract/{contractAddress}/{eventName}/{blockNumber}")
   public List<JSONObject> findEventsByContractAddressAndEventNameAndBlockNumTronGrid (
