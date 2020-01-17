@@ -31,6 +31,7 @@ import org.tron.common.crypto.Crypto;
 import org.tron.common.utils.ByteArray;
 import org.tron.trongeventquery.query.QueryFactory;
 import org.tron.trongeventquery.response.Response;
+import org.tron.trongeventquery.solidityevents.SolidityTriggerEntity;
 
 @RestController
 @Component
@@ -594,13 +595,13 @@ public class ContractEventController {
           try {
             QueryFactory query = new QueryFactory();
             query.setPageniate(QueryFactory.setPagniateVariable(0, 1, "-latestSolidifiedBlockNumber"));
-            List<ContractEventTriggerEntity> contractEventTriggerEntityList
+            List<SolidityTriggerEntity> solidityTriggerEntityList
                 = mongoTemplate.find(query.getQuery(),
-                ContractEventTriggerEntity.class);
-            if (contractEventTriggerEntityList.isEmpty()) {
+                SolidityTriggerEntity.class);
+            if (solidityTriggerEntityList.isEmpty()) {
               return;
             }
-            latestSolidifiedBlockNumber.set(contractEventTriggerEntityList.get(0).getLatestSolidifiedBlockNumber());
+            latestSolidifiedBlockNumber.set(solidityTriggerEntityList.get(0).getLatestSolidifiedBlockNumber());
             TimeUnit.MILLISECONDS.sleep(1000L);
           } catch (InterruptedException e) {
             LOG.error(e.getMessage());
