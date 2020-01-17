@@ -536,7 +536,7 @@ public class ContractEventController {
     return array;
   }
 
-  List<JSONObject> getResultType(String fullName, String eventSignature) {
+  JSONObject getResultType(String fullName, String eventSignature) {
     int num = eventSignature.length();
     String newSignature = fullName.substring(num + 1, fullName.length() - 1);
     String[] arrayList = Strings.split(newSignature, ',');
@@ -546,11 +546,10 @@ public class ContractEventController {
       String[] type = str.split(" ");
       map.put(type[1], type[0]);
     }
-    array.add(new JSONObject(map));
-    return array;
+    return new JSONObject(map);
   }
 
-  List<JSONObject> getResult(String fullName, String eventSignature, Map<String, String> topMap, Map<String, String> dataMap) {
+  JSONObject getResult(String fullName, String eventSignature, Map<String, String> topMap, Map<String, String> dataMap) {
     int num = eventSignature.length();
     String newSignature = fullName.substring(num + 1, fullName.length() - 1);
     String[] arrayList = Strings.split(newSignature, ',');
@@ -581,8 +580,7 @@ public class ContractEventController {
       i ++;
       map.put(type[1], ans);
     }
-    array.add(new JSONObject(map));
-    return array;
+    return new JSONObject(map);
   }
 
   int getIndex(String unique) {
