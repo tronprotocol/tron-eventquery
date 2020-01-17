@@ -320,7 +320,7 @@ public class ContractEventController {
     for (ContractEventTriggerEntity p : queryResult) {
       Map map = new HashMap();
       map.put("transaction_id", p.getTransactionId());
-      map.put("block_timestamp", String.valueOf(p.getTimeStamp()));
+      map.put("block_timestamp", p.getTimeStamp());
       map.put("block_number", p.getBlockNumber());
       map.put("result_type", getResultType(p.getEventSignatureFull(), p.getEventName()));
       map.put("result", getResult(p.getEventSignatureFull(), p.getEventName(), p.getTopicMap(), p.getDataMap()));
@@ -382,7 +382,7 @@ public class ContractEventController {
     for (ContractEventTriggerEntity p : result) {
       Map map = new HashMap();
       map.put("transaction_id", p.getTransactionId());
-      map.put("block_timestamp", String.valueOf(p.getTimeStamp()));
+      map.put("block_timestamp", p.getTimeStamp());
       map.put("block_number", p.getBlockNumber());
       map.put("result_type", getResultType(p.getEventSignatureFull(), p.getEventName()));
       map.put("result", getResult(p.getEventSignatureFull(), p.getEventName(), p.getTopicMap(), p.getDataMap()));
@@ -450,7 +450,7 @@ public class ContractEventController {
     for (ContractEventTriggerEntity p : result) {
       Map map = new HashMap();
       map.put("transaction_id", p.getTransactionId());
-      map.put("block_timestamp", String.valueOf(p.getTimeStamp()));
+      map.put("block_timestamp", p.getTimeStamp());
       map.put("block_number", p.getBlockNumber());
       map.put("result_type", getResultType(p.getEventSignatureFull(), p.getEventName()));
       map.put("result", getResult(p.getEventSignatureFull(), p.getEventName(), p.getTopicMap(), p.getDataMap()));
@@ -518,7 +518,7 @@ public class ContractEventController {
     for (ContractEventTriggerEntity p : result) {
       Map map = new HashMap();
       map.put("transaction_id", p.getTransactionId());
-      map.put("block_timestamp", String.valueOf(p.getTimeStamp()));
+      map.put("block_timestamp", p.getTimeStamp());
       map.put("block_number", p.getBlockNumber());
       map.put("result_type", getResultType(p.getEventSignatureFull(), p.getEventName()));
       map.put("result", getResult(p.getEventSignatureFull(), p.getEventName(), p.getTopicMap(), p.getDataMap()));
