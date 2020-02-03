@@ -329,6 +329,9 @@ public class ContractEventController {
       map.put("event_name", p.getEventName());
       map.put("contract_address", p.getContractAddress());
       map.put("caller_contract_address", p.getOriginAddress());
+      if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
+        map.put("_unconfirmed", true);
+      }
 
       array.add(new JSONObject(map));
     }
@@ -391,6 +394,9 @@ public class ContractEventController {
       map.put("event_name", p.getEventName());
       map.put("contract_address", p.getContractAddress());
       map.put("caller_contract_address", p.getOriginAddress());
+      if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
+        map.put("_unconfirmed", true);
+      }
 
       if (count++ == result.size()) {
         map.put("_fingerprint", Crypto.encrypt(String.format("%d", start + 1)));
@@ -459,6 +465,9 @@ public class ContractEventController {
       map.put("event_name", p.getEventName());
       map.put("contract_address", p.getContractAddress());
       map.put("caller_contract_address", p.getOriginAddress());
+      if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
+        map.put("_unconfirmed", true);
+      }
 
       if (count++ == result.size()) {
         map.put("_fingerprint", Crypto.encrypt(String.format("%d", start + 1)));
@@ -527,6 +536,9 @@ public class ContractEventController {
       map.put("event_name", p.getEventName());
       map.put("contract_address", p.getContractAddress());
       map.put("caller_contract_address", p.getOriginAddress());
+      if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
+        map.put("_unconfirmed", true);
+      }
 
       if (count++ == result.size()) {
         map.put("_fingerprint", Crypto.encrypt(String.format("%d", start + 1)));
