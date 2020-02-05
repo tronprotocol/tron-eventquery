@@ -635,10 +635,10 @@ public class ContractEventController {
       return CONFILICTING_PARAMETERS;
     }
     if (onlyConfirmed.length() != 0) {
-      return Boolean.getBoolean(onlyConfirmed)?  RETURN_ONLY_CONFIRMED_EVENTS : RETURN_ONLY_UNCONFIRMED_EVENTS;
+      return Boolean.parseBoolean(onlyConfirmed)?  RETURN_ONLY_CONFIRMED_EVENTS : RETURN_ONLY_UNCONFIRMED_EVENTS;
     }
     if (onlyUnconfirmed.length() != 0) {
-      return Boolean.getBoolean(onlyUnconfirmed)?  RETURN_ONLY_UNCONFIRMED_EVENTS : RETURN_ONLY_CONFIRMED_EVENTS;
+      return Boolean.parseBoolean(onlyUnconfirmed)?  RETURN_ONLY_UNCONFIRMED_EVENTS : RETURN_ONLY_CONFIRMED_EVENTS;
     }
     return RETURN_ALL_EVENTS;
   }
