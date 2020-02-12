@@ -62,7 +62,6 @@ public class ContractEventController {
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start
   ) {
-
     QueryFactory query = new QueryFactory();
     if (blocknum != -1) {
       query.setBlockNumGte(blocknum);
