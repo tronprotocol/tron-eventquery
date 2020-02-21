@@ -118,6 +118,8 @@ public class CommonFilter implements Filter {
                 obj.put(FAIL5XX_REQUST, (int) obj.get(FAIL_REQUST)-(int) obj.get(FAIL4XX_REQUST));
                 throw e;
             }
+            obj.put(OK_REQUST, (int) obj.get(TOTAL_REQUST) - (int) obj.get(FAIL_REQUST));
+            okCount=totalCount-failCount;
             // update map
             EndpointCount.put(endpoint, obj);
         } else {

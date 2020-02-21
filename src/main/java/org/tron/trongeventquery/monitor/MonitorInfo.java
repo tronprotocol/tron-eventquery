@@ -297,6 +297,7 @@ public class MonitorInfo {
             public static class ApiInfo {
                 private int totalCount;
                 private int totalFailCount;
+                private int totalCount2xx;
                 private int totalCount4xx;
                 private int totalCount5xx;
 
@@ -317,6 +318,15 @@ public class MonitorInfo {
 
                 public ApiInfo setTotalFailCount(int totalFailCount) {
                     this.totalFailCount = totalFailCount;
+                    return this;
+                }
+
+                public int getTotalCount2xx() {
+                    return this.totalCount2xx;
+                }
+
+                public ApiInfo setTotalCount2xx(int totalCount2xx) {
+                    this.totalCount2xx = totalCount2xx;
                     return this;
                 }
 
@@ -353,6 +363,7 @@ public class MonitorInfo {
                     private int failCount;
                     private int count4xx;
                     private int count5xx;
+                    private int count2xx;
 
 
                     public String getName() {
@@ -397,6 +408,14 @@ public class MonitorInfo {
 
                     public ApiDetailInfo setCount5xx(int count5xx) {
                         this.count5xx = count5xx;
+                        return this;
+                    }
+                    public int getCount2xx() {
+                        return this.count2xx;
+                    }
+
+                    public ApiDetailInfo setCount2xx(int count2xx) {
+                        this.count2xx = count2xx;
                         return this;
                     }
                 }
