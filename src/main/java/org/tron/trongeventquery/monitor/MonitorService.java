@@ -38,6 +38,8 @@ public class MonitorService {
     CommonFilter commonFilter=new CommonFilter();
     apiInfo.setTotalCount(commonFilter.getInstance().getTotalCount());
     apiInfo.setTotalFailCount(commonFilter.getInstance().getFailCount());
+    apiInfo.setTotalCount4xx(commonFilter.getInstance().getCount4xx());
+    apiInfo.setTotalCount5xx(commonFilter.getInstance().getCount5xx());
     List<MonitorInfo.DataInfo.NetInfo.ApiInfo.ApiDetailInfo> apiDetails = new ArrayList<>();
     for(Map.Entry<String, JSONObject> entry: commonFilter.getInstance().getEndpointMap().entrySet()){
       MonitorInfo.DataInfo.NetInfo.ApiInfo.ApiDetailInfo apiDetail =
@@ -45,6 +47,8 @@ public class MonitorService {
       apiDetail.setName(entry.getKey());
       apiDetail.setCount((int)entry.getValue().get(CommonFilter.TOTAL_REQUST));
       apiDetail.setFailCount((int)entry.getValue().get(CommonFilter.FAIL_REQUST));
+      apiDetail.setCount4xx((int)entry.getValue().get(CommonFilter.FAIL4XX_REQUST));
+      apiDetail.setCount5xx((int)entry.getValue().get(CommonFilter.FAIL5XX_REQUST));
       apiDetails.add(apiDetail);
     }
     apiInfo.setApiDetailInfo(apiDetails);
