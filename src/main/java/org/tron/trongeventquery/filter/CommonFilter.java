@@ -16,9 +16,13 @@ public class CommonFilter implements Filter {
 
     public  static String TOTAL_REQUST = "TOTAL_REQUEST";
     public  static String FAIL_REQUST = "FAIL_REQUEST";
+    public  static String FAIL4XX_REQUST = "FAIL4XX_REQUEST";
+    public  static String FAIL5XX_REQUST = "FAIL5XX_REQUEST";
     public  static String OK_REQUST = "OK_REQUEST";
     private static int totalCount = 0;
     private static int failCount = 0;
+    private static int count4xx=0;
+    private static int count5xx=0;
     private static int okCount=0;
     private static int interval = 1440;      // 24 hour
     private static HashMap<String, JSONObject> EndpointCount = new HashMap<String, JSONObject>();
@@ -40,6 +44,13 @@ public class CommonFilter implements Filter {
 
     public int getOkCount() { return this.okCount; }
 
+    public int getCount4xx() {
+        return count4xx;
+    }
+    public int getCount5xx() {
+        return count5xx;
+    }
+
     public HashMap<String, JSONObject> getEndpointMap() {
         return this.EndpointCount;
     }
@@ -60,6 +71,8 @@ public class CommonFilter implements Filter {
         if (currentTime - preciousTime > gapMilliseconds) {   //reset every 1 minutes
             totalCount = 0;
             failCount = 0;
+            count4xx=0;
+            count5xx=0;
             okCount=0;
             preciousTime = currentTime;
             EndpointCount.clear();
@@ -73,6 +86,8 @@ public class CommonFilter implements Filter {
             } else {
                 obj.put(TOTAL_REQUST, 0);
                 obj.put(FAIL_REQUST, 0);
+                obj.put(FAIL4XX_REQUST, 0);
+                obj.put(FAIL5XX_REQUST, 0);
                 obj.put(OK_REQUST, 0);
                 obj.put(END_POINT, endpoint);
             }
@@ -86,13 +101,25 @@ public class CommonFilter implements Filter {
 //                System.out.println("--response:"+response);
                 if (resp.getStatus() != 200) {
                     failCount++;
+                    count5xx=failCount-count4xx;
                     obj.put(FAIL_REQUST, (int) obj.get(FAIL_REQUST) + 1);
+                    obj.put(FAIL5XX_REQUST, (int) obj.get(FAIL_REQUST)-(int) obj.get(FAIL4XX_REQUST));
+                }
+                if (resp.getStatus() < 500 & resp.getStatus() > 399) {
+                    count4xx++;
+                    count5xx=failCount-count4xx;
+                    obj.put(FAIL4XX_REQUST, (int) obj.get(FAIL4XX_REQUST) + 1);
+                    obj.put(FAIL5XX_REQUST, (int) obj.get(FAIL_REQUST)-(int) obj.get(FAIL4XX_REQUST));
                 }
             } catch (Exception e) {
                 failCount++;
+                count5xx=failCount-count4xx;
                 obj.put(FAIL_REQUST, (int) obj.get(FAIL_REQUST) + 1);
+                obj.put(FAIL5XX_REQUST, (int) obj.get(FAIL_REQUST)-(int) obj.get(FAIL4XX_REQUST));
                 throw e;
             }
+            obj.put(OK_REQUST, (int) obj.get(TOTAL_REQUST) - (int) obj.get(FAIL_REQUST));
+            okCount=totalCount-failCount;
             // update map
             EndpointCount.put(endpoint, obj);
         } else {
