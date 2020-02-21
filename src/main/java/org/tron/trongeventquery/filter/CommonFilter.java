@@ -20,10 +20,9 @@ public class CommonFilter implements Filter {
     private static int totalCount = 0;
     private static int failCount = 0;
     private static int okCount=0;
-    private static int interval = 1;      // 1 minute interval
+    private static int interval = 1440;      // 24 hour
     private static HashMap<String, JSONObject> EndpointCount = new HashMap<String, JSONObject>();
     public String END_POINT = "END_POINT";
-    public String uri = "";
     public long gapMilliseconds = interval * 60 * 1000;
     private long preciousTime = 0;
 
@@ -83,8 +82,8 @@ public class CommonFilter implements Filter {
             try {
                 chain.doFilter(request, response);
                 HttpServletResponse resp = (HttpServletResponse) response;
-                System.out.println("--status:"+resp.getStatus());
-                System.out.println("--response:"+response);
+//                System.out.println("--status:"+resp.getStatus());
+//                System.out.println("--response:"+response);
                 if (resp.getStatus() != 200) {
                     failCount++;
                     obj.put(FAIL_REQUST, (int) obj.get(FAIL_REQUST) + 1);

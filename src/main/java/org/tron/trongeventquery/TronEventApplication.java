@@ -27,8 +27,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-@ServletComponentScan("org.tron.trongeventquery.filter") //Scan Filter
+
 @SpringBootApplication(exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
+@ServletComponentScan("org.tron.trongeventquery.filter") //Scan Filter
 @PropertySource(value = {"file:./config.conf"}, ignoreResourceNotFound = true)
 public class TronEventApplication {
 
