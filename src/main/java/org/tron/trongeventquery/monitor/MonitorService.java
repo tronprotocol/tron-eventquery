@@ -37,7 +37,7 @@ public class MonitorService {
     MonitorInfo.DataInfo.NetInfo.ApiInfo apiInfo = new MonitorInfo.DataInfo.NetInfo.ApiInfo();
     CommonFilter commonFilter=new CommonFilter();
     apiInfo.setTotalCount(commonFilter.getInstance().getTotalCount());
-    apiInfo.setTotalCount2xx(commonFilter.getInstance().getOkCount());
+    apiInfo.setTotalCount2xx(commonFilter.getInstance().getTotalCount()-commonFilter.getInstance().getFailCount());
     apiInfo.setTotalFailCount(commonFilter.getInstance().getFailCount());
     apiInfo.setTotalCount4xx(commonFilter.getInstance().getCount4xx());
     apiInfo.setTotalCount5xx(commonFilter.getInstance().getCount5xx());
@@ -48,7 +48,7 @@ public class MonitorService {
       apiDetail.setName(entry.getKey());
       apiDetail.setCount((int)entry.getValue().get(CommonFilter.TOTAL_REQUST));
       apiDetail.setFailCount((int)entry.getValue().get(CommonFilter.FAIL_REQUST));
-      apiDetail.setCount2xx((int)entry.getValue().get(CommonFilter.OK_REQUST));
+      apiDetail.setCount2xx((int)entry.getValue().get(CommonFilter.TOTAL_REQUST)-(int)entry.getValue().get(CommonFilter.FAIL_REQUST));
       apiDetail.setCount4xx((int)entry.getValue().get(CommonFilter.FAIL4XX_REQUST));
       apiDetail.setCount5xx((int)entry.getValue().get(CommonFilter.FAIL5XX_REQUST));
       apiDetails.add(apiDetail);
