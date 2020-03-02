@@ -11,7 +11,7 @@ while true; do
   fi
 done
 total=`cat /proc/meminfo  |grep MemTotal |awk -F ' ' '{print $2}'`
-xmx=`echo "$total/1024/1024*0.5" | bc |awk -F. '{print $1"g"}'`
+xmx=`echo "$total/1024/1024*0.6" | bc |awk -F. '{print $1"g"}'`
 logtime=`date +%Y-%m-%d_%H-%M-%S`
  nohup java -Xmx$xmx -XX:+UseConcMarkSweepGC -XX:+PrintGCDetails -Xloggc:./gc.log\
  -XX:+PrintGCDateStamps -XX:+CMSParallelRemarkEnabled -XX:ReservedCodeCacheSize=256m\
