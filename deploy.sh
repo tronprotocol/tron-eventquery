@@ -10,6 +10,12 @@ while true; do
     break
   fi
 done
-nohup java -jar target/troneventquery-1.0.0-SNAPSHOT.jar 2>&1 &
+total=`cat /proc/meminfo  |grep MemTotal |awk -F ' ' '{print $2}'`
+xmx=`echo "$total/1024/1024*0.5" | bc |awk -F. '{print $1"g"}'`
+logtime=`date +%Y-%m-%d_%H-%M-%S`
+ nohup java -Xmx$xmx -XX:+UseConcMarkSweepGC -XX:+PrintGCDetails -Xloggc:./gc.log\
+ -XX:+PrintGCDateStamps -XX:+CMSParallelRemarkEnabled -XX:ReservedCodeCacheSize=256m\
+ -XX:+CMSScavengeBeforeRemark -jar target/troneventquery-1.0.0-SNAPSHOT.jar
+
 sleep 10
 echo "ok!"
