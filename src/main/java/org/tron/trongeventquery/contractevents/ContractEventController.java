@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tron.common.crypto.Crypto;
 import org.tron.common.utils.ByteArray;
+import org.tron.trongeventquery.TronEventApplication;
 import org.tron.trongeventquery.query.QueryFactory;
 import org.tron.trongeventquery.response.Response;
 import org.tron.trongeventquery.solidityevents.SolidityTriggerEntity;
@@ -323,7 +325,7 @@ public class ContractEventController {
       map.put("transaction_id", p.getTransactionId());
       map.put("block_timestamp", p.getTimeStamp());
       map.put("block_number", p.getBlockNumber());
-      map.put("result_type", getResultType(p.getEventSignatureFull(), p.getEventName()));
+      map.put("result_type",  getResultType(p.getEventSignatureFull(), p.getEventName()));
       map.put("result", getResult(p.getEventSignatureFull(), p.getEventName(), p.getTopicMap(), p.getDataMap()));
       map.put("event_index", getIndex(p.getUniqueId()));
       map.put("event_name", p.getEventName());
@@ -553,7 +555,11 @@ public class ContractEventController {
     List<JSONObject> array = new ArrayList<>();
     for (String str : arrayList) {
       String[] type = str.split(" ");
-      map.put(type[1], type[0]);
+      if (type.length > 1) {
+        map.put(type[1], type[0]);
+      } else {
+        map.put("", type[0]);
+      }
     }
     return new JSONObject(map);
   }
