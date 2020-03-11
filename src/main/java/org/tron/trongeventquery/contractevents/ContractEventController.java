@@ -593,7 +593,12 @@ public class ContractEventController {
       }
 
       i ++;
-      map.put(type[1], ans);
+      if (type.length > 1) {
+        map.put(type[1], ans);
+      } else {
+        map.put("", ans);
+      }
+
     }
     return new JSONObject(map);
   }
