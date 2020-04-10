@@ -64,7 +64,6 @@ public class ContractEventController {
       @RequestParam(value = "sort", required = false, defaultValue = "-timeStamp") String sort,
       @RequestParam(value = "start", required = false, defaultValue = "0") int start
   ) {
-
     QueryFactory query = new QueryFactory();
     if (blocknum != -1) {
       query.setBlockNumGte(blocknum);
@@ -331,6 +330,9 @@ public class ContractEventController {
       map.put("event_name", p.getEventName());
       map.put("contract_address", p.getContractAddress());
       map.put("caller_contract_address", p.getOriginAddress());
+      if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
+        map.put("_unconfirmed", true);
+      }
 
       array.add(new JSONObject(map));
     }
@@ -393,6 +395,9 @@ public class ContractEventController {
       map.put("event_name", p.getEventName());
       map.put("contract_address", p.getContractAddress());
       map.put("caller_contract_address", p.getOriginAddress());
+      if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
+        map.put("_unconfirmed", true);
+      }
 
       if (count++ == result.size()) {
         map.put("_fingerprint", Crypto.encrypt(String.format("%d", start + 1)));
@@ -461,6 +466,9 @@ public class ContractEventController {
       map.put("event_name", p.getEventName());
       map.put("contract_address", p.getContractAddress());
       map.put("caller_contract_address", p.getOriginAddress());
+      if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
+        map.put("_unconfirmed", true);
+      }
 
       if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
         map.put("_unconfirmed", true);
@@ -533,6 +541,9 @@ public class ContractEventController {
       map.put("event_name", p.getEventName());
       map.put("contract_address", p.getContractAddress());
       map.put("caller_contract_address", p.getOriginAddress());
+      if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
+        map.put("_unconfirmed", true);
+      }
 
       if (p.getBlockNumber() > latestSolidifiedBlockNumber.get()) {
         map.put("_unconfirmed", true);
@@ -642,10 +653,10 @@ public class ContractEventController {
       return CONFILICTING_PARAMETERS;
     }
     if (onlyConfirmed.length() != 0) {
-      return Boolean.getBoolean(onlyConfirmed)?  RETURN_ONLY_CONFIRMED_EVENTS : RETURN_ONLY_UNCONFIRMED_EVENTS;
+      return Boolean.parseBoolean(onlyConfirmed)?  RETURN_ONLY_CONFIRMED_EVENTS : RETURN_ONLY_UNCONFIRMED_EVENTS;
     }
     if (onlyUnconfirmed.length() != 0) {
-      return Boolean.getBoolean(onlyUnconfirmed)?  RETURN_ONLY_UNCONFIRMED_EVENTS : RETURN_ONLY_CONFIRMED_EVENTS;
+      return Boolean.parseBoolean(onlyUnconfirmed)?  RETURN_ONLY_UNCONFIRMED_EVENTS : RETURN_ONLY_CONFIRMED_EVENTS;
     }
     return RETURN_ALL_EVENTS;
   }
