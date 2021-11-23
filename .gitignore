@@ -1,3 +1,7 @@
 target/*
 .idea/*
 troneventquery.iml
+.classpath
+.factorypath
+.settings/*
+.vscode/*
