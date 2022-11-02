@@ -1,6 +1,8 @@
 package org.tron.trongeventquery.query;
 
 
+import static org.tron.common.utils.LogConfig.LOG;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import java.util.HashMap;
@@ -11,7 +13,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.util.StringUtils;
 import org.spongycastle.util.encoders.Hex;
 
-@Slf4j(topic = "Parser")
 public class ContractEventParserJson extends ContractEventParser {
 
   /**
@@ -30,20 +31,22 @@ public class ContractEventParserJson extends ContractEventParser {
 
     // in case indexed topics doesn't match
     if (topicsMatched(topicList, entry)) {
-      for (int i = 0; i < inputs.size(); ++i) {
-        JSONObject param = inputs.getJSONObject(i);
-        Boolean indexed = param.getBoolean("indexed");
-        if (indexed == null || !indexed) {
-          continue;
+      if (inputs != null) {
+        for (int i = 0; i < inputs.size(); ++i) {
+          JSONObject param = inputs.getJSONObject(i);
+          Boolean indexed = param.getBoolean("indexed");
+          if (indexed == null || !indexed) {
+            continue;
+          }
+          if (index >= topicList.size()) {
+            break;
+          }
+          String str = parseTopic(topicList.get(index++), param.getString("type"));
+          if (StringUtils.isNotNullOrEmpty(param.getString("name"))) {
+            map.put(param.getString("name"), str);
+          }
+          map.put("" + i, str);
         }
-        if (index >= topicList.size()) {
-          break;
-        }
-        String str = parseTopic(topicList.get(index++), param.getString("type"));
-        if (StringUtils.isNotNullOrEmpty(param.getString("name"))) {
-          map.put(param.getString("name"), str);
-        }
-        map.put("" + i, str);
       }
     } else {
       for (int i = 1; i < topicList.size(); ++i) {
@@ -100,7 +103,7 @@ public class ContractEventParserJson extends ContractEventParser {
         map.put("0", Hex.toHexString(data));
       }
     } catch (UnsupportedOperationException e) {
-      log.debug("UnsupportedOperationException", e);
+      LOG.debug("UnsupportedOperationException", e);
       map.clear();
       map.put(startIndex.toString(), Hex.toHexString(data));
     }
@@ -113,11 +116,13 @@ public class ContractEventParserJson extends ContractEventParser {
     }
     int inputSize = 1;
     JSONArray inputs = entry.getJSONArray("inputs");
-    for (int i = 0; i < inputs.size(); i++) {
-      JSONObject param = inputs.getJSONObject(i);
-      Boolean indexed = param.getBoolean("indexed");
-      if (indexed != null && indexed) {
-        inputSize++;
+    if (inputs != null) {
+      for (int i = 0; i < inputs.size(); i++) {
+        JSONObject param = inputs.getJSONObject(i);
+        Boolean indexed = param.getBoolean("indexed");
+        if (indexed != null && indexed) {
+          inputSize++;
+        }
       }
     }
     return inputSize == topicList.size();

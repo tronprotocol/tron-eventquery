@@ -1,2 +1,7 @@
-target/classes/org/tron/trongrid/ContractEventTriggerEntity.class
-target/classes/org/tron/trongrid/InternalTransactionPojo.class
+target/*
+.idea/*
+troneventquery.iml
+.classpath
+.factorypath
+.settings/*
+.vscode/*

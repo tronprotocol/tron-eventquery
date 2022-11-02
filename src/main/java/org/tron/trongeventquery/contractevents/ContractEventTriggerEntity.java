@@ -132,5 +132,4 @@ public class ContractEventTriggerEntity {
     this.rawData = rawData;
     this.abiString = abiString;
   }
-
 }

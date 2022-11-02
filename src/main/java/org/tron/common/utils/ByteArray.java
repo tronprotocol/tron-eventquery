@@ -18,6 +18,8 @@
 
 package org.tron.common.utils;
 
+import static org.tron.common.utils.LogConfig.LOG;
+
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import java.io.ByteArrayOutputStream;
@@ -29,7 +31,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
 
-@Slf4j(topic = "utils")
 public class ByteArray {
 
   public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
@@ -101,7 +102,7 @@ public class ByteArray {
       objectOutputStream.flush();
       bytes = byteArrayOutputStream.toByteArray();
     } catch (IOException e) {
-      log.error("objectToByteArray failed: " + e.getMessage(), e);
+      LOG.error("objectToByteArray failed: " + e.getMessage(), e);
     }
     return bytes;
   }
