@@ -176,8 +176,7 @@ public class QueryFactory {
             trigger.getTimeStamp(),
             trigger.getTriggerName(),
             trigger.getUniqueId(),
-            trigger.getRawData(),
-            trigger.getAbiString()
+            trigger.getRawData()
         );
 
         result.add(event);
@@ -234,8 +233,7 @@ public class QueryFactory {
             abiStrMap.get(logHash + "_full"),
             abiStrMap.get(logHash + "_name"),
             trigger.getUniqueId(),
-            trigger.getRawData(),
-            trigger.getAbiString()
+            trigger.getRawData()
         );
         result.add(event);
       }
@@ -281,8 +279,7 @@ public class QueryFactory {
             trigger.getTimeStamp(),
             trigger.getTriggerName(),
             trigger.getUniqueId(),
-            trigger.getRawData(),
-            trigger.getAbiString()
+            trigger.getRawData()
         );
 
         result.add(event);
@@ -340,8 +337,7 @@ public class QueryFactory {
             abiStrMap.get(logHash + "_full"),
             abiStrMap.get(logHash + "_name"),
             trigger.getUniqueId(),
-            trigger.getRawData(),
-            trigger.getAbiString()
+            trigger.getRawData()
         );
         result.add(event);
       }

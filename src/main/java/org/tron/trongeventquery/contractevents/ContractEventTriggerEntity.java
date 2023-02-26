@@ -96,11 +96,6 @@ public class ContractEventTriggerEntity {
   @Getter
   private String uniqueId;
 
-  @Field(value = "abiString")
-  @JsonProperty(value = "abiString")
-  @Getter
-  private String abiString;
-
   @Field(value = "rawData")
   @JsonProperty(value = "rawData")
   @Getter
@@ -112,7 +107,7 @@ public class ContractEventTriggerEntity {
       String callerAddress, String originAddress,
       String creatorAddress, Long blockNumber, String removed, long timeStamp, String triggerName,
       String eventSignatureFull, String eventName, String uniqueId,
-      LogInfoEntity rawData, String abiString) {
+      LogInfoEntity rawData) {
     this.eventSignature = eventSignature;
     this.topicMap = topicMap;
     this.dataMap = dataMap;
@@ -130,6 +125,5 @@ public class ContractEventTriggerEntity {
     this.latestSolidifiedBlockNumber = latestSolidifiedBlockNumber;
     this.uniqueId = uniqueId;
     this.rawData = rawData;
-    this.abiString = abiString;
   }
 }
